@@ -22,7 +22,9 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	private JFrame frame;
 	private Timer gameLoopTimer;
 	public List<GameObject> gameObjectList;
-	private int hunter = 0; 
+	//these will help find the hunter in the game object list
+	private int index = 0; 
+	private Hunter h;
 
 	public GameFrame() {
 		// make a list of characters
@@ -70,23 +72,23 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	// Canvas must implement the inherited abstract method
 	// ActionListener.actionPerformed(ActionEvent)
 	public synchronized void actionPerformed(ActionEvent e) {
+		if (gameObjectList.size()>1) {
+			for (int i=0; i<gameObjectList.size();i++) {
+				if (gameObjectList.get(i) instanceof Vampire) {
+					Vampire vamps = (Vampire)gameObjectList.get(i); //casting just in case
+					vamps.fetchmeTheirSouls(trackex(),trackey());
+						}
+			}
+		}
+		
 		for (GameObject gameObject : gameObjectList) {
 			
 			//if (gameObject != gameObjectList.get(highlighted)) {
 				//gameObject.autoMove();
 			//}
-			
 			gameObject.move(this);
 			gameObject.setImage();
-			System.out.println("Hunter position:"+ trackex()+","+trackey());
-			if (gameObjectList.size()>1) {
-				for (int i=0; i<gameObjectList.size();i++) {
-					if (gameObjectList.get(i) instanceof Vampire) {
-						Vampire vamps = (Vampire)gameObjectList.get(i); //casting just in case
-						vamps.fetchmeTheirSouls(trackex(),trackey());
-					}
-				}
-			}
+			//System.out.println("                                                                    Hunter position:"+ trackex()+","+trackey());
 		}
 		repaint();
 	}
@@ -102,9 +104,18 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	  }
 
 	  public void keyPressed(KeyEvent e) {
-		  gameObjectList.get(hunter).keyPressed(e);
-		  GameObject s = gameObjectList.get(hunter);
+		  //looks for the hunter
+		  for (GameObject obj: gameObjectList) {
+			  if (obj instanceof Hunter){
+				  h = (Hunter)obj;
+				  index= gameObjectList.indexOf(obj);
+			  }
+		  }
+		  gameObjectList.get(index).keyPressed(e);
+		  GameObject s = gameObjectList.get(index);
 		    s.setVelocity(20); 
+		    boolean isHunter = gameObjectList.get(index) instanceof Hunter;
+		    System.out.println("                                                                                                     "+isHunter);
 	  }
 
 	  public void keyReleased(KeyEvent e) {
@@ -124,14 +135,14 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	      //System.out.println("                                                                                                     Tab button pressed");
 	      //  addKeyListener(gameObjectList.get(highlighted));
 	  //  }
-	   GameObject s = gameObjectList.get(hunter);
+	   GameObject s = gameObjectList.get(index);
 	    s.setVelocity(0); 
 	  }
 	  public int trackex() {
-		  return gameObjectList.get(hunter).getX();
+		  return gameObjectList.get(index).getX();
 	  }
 	  public int trackey() {
-		  return gameObjectList.get(hunter).getX();
+		  return gameObjectList.get(index).getY();
 	  }
 
 }

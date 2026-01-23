@@ -15,10 +15,10 @@ public class Hunter extends GameObject implements KeyListener {
     setDirection(Direction.NONE);
     
     imageList = new LinkedList<Icon>();
-    imageList.add(new ImageIcon("Images/HunterDown.png"));
-    imageList.add(new ImageIcon("Images/HunterDown.png"));
-    imageList.add(new ImageIcon("Images/HunterRight2.png"));
-    imageList.add(new ImageIcon("Images/HunterRight2.png"));
+    imageList.add(new ImageIcon("Images/VanDown.png"));
+    imageList.add(new ImageIcon("Images/VanUp.png"));
+    imageList.add(new ImageIcon("Images/VanLef2.png"));
+    imageList.add(new ImageIcon("Images/VanRight2.png"));
     
   }
 

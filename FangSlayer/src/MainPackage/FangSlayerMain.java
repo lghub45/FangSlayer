@@ -13,6 +13,7 @@ import Characters.Vampire;
 //import Storage.DB;
 import WindowsPack.GameFrame;
 
+//NOTE TO SELF ADD CONFIRMATION THAT THE HUNTER IS THE FIRST OBJECT ADDED TO THE GAME OBJECT LIST
 
 public class FangSlayerMain {
 
@@ -30,6 +31,10 @@ public class FangSlayerMain {
 		
 		Vampire vlad = new Vampire(0,0);
 		minimap.addGameObject(vlad);
+		Vampire mareceline = new Vampire(0,200);
+		minimap.addGameObject(mareceline);
+		Vampire mrburns = new Vampire(200,0);
+		minimap.addGameObject(mrburns);
 		//  DB db;
 		 //try {
 			//db = DB.getInstance();

@@ -44,17 +44,17 @@ public class Vampire extends GameObject {
 		        }
 		        break;
 		      case Direction.LEFT:
-		        setX(getX() + getVelocity());
-		        if (getX() + iconWidth > canvasWidth) {
-		          setX((int)(canvasWidth - iconWidth));
-		        }
-		        break;
+		    	  setX(getX() - getVelocity());
+		    	    if (getX() < 0) {
+		    	        setX(0);
+		    	    }
+		    	    break;
 		      case Direction.RIGHT:
-		        setX(getX() - getVelocity());
-		        if (getX() < 0) {
-		          setX(0);
-		        }
-		        break;
+		    	   setX(getX() + getVelocity());
+		    	    if (getX() + iconWidth > canvasWidth) {
+		    	        setX(canvasWidth - iconWidth);
+		    	    }
+		    	    break;
 			default:
 				break;
 		    }
@@ -82,10 +82,10 @@ public class Vampire extends GameObject {
 	 public void fetchmeTheirSouls(int huntrx,int huntry) {
 		
 		 
-		 if(this.getY() < huntry) {setDirection(Direction.UP);setVelocity(20);}
-		 else if (this.getY() > huntry) {setDirection(Direction.DOWN);setVelocity(20);}
-		 else if (this.getX() > huntrx) {setDirection(Direction.LEFT);setVelocity(20);}
-		 else if (this.getX()<huntrx) {setDirection(Direction.RIGHT);setVelocity(20);}
+		 if(this.getY() > huntry) {setDirection(Direction.UP);setVelocity(5);}
+		 else if (this.getY() < huntry) {setDirection(Direction.DOWN);setVelocity(5);}
+		 else if (this.getX() > huntrx) {setDirection(Direction.LEFT);setVelocity(5);}
+		 else if (this.getX()<huntrx) {setDirection(Direction.RIGHT);setVelocity(5);}
 		 
 	 }
 	 @Override
