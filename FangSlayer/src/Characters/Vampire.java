@@ -14,11 +14,10 @@ public class Vampire extends GameObject {
 		    setDirection(Direction.NONE);
 		    
 		    imageList = new LinkedList<Icon>();
-		    imageList.add(new ImageIcon("Images/HunterDown.png"));
-		    imageList.add(new ImageIcon("Images/HunterDown.png"));
-		    imageList.add(new ImageIcon("Images/HunterDown.png"));
-		    imageList.add(new ImageIcon("Images/HunterDown.png"));
-		    
+		    imageList.add(new ImageIcon("Images/VampUp1.png"));
+		    imageList.add(new ImageIcon("Images/VampDown1.png"));
+		    imageList.add(new ImageIcon("Images/VampLeft1.png"));
+		    imageList.add(new ImageIcon("Images/VampRight1.png"));
 		    
 		  }
 	 public void move(GameFrame c) {
@@ -79,7 +78,7 @@ public class Vampire extends GameObject {
 		    }
 		  }
 	 //helps the vampire chase the hunter with their current position
-	 public void fetchmeTheirSouls(int huntrx,int huntry) {
+	 public void huntHim(int huntrx,int huntry) {
 		
 		 
 		 if(this.getY() > huntry) {setDirection(Direction.UP);setVelocity(5);}
@@ -88,19 +87,20 @@ public class Vampire extends GameObject {
 		 else if (this.getX()<huntrx) {setDirection(Direction.RIGHT);setVelocity(5);}
 		 
 	 }
+	 
+	 //just a formality since vampire doesn't need controls to move
 	 @Override
-	 public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	 }
+	 public void keyTyped(KeyEvent e) {}
 	 @Override
-	 public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	 }
+	 public void keyPressed(KeyEvent e) {}
 	 @Override
-	 public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	 }
+	 public void keyReleased(KeyEvent e) {}
+	 
+	//tracks the position of the vampire so it can compare for when it meets the hunter
+	  public int trackex() {
+		  return this.getX();
+	  }
+	  public int trackey() {
+		  return this.getY();
+	  }
 }

@@ -10,15 +10,18 @@ import WindowsPack.GameFrame;
 
 public class Hunter extends GameObject implements KeyListener {
 
+	//this is used to help make arrows go in the correct direction when fired
+	public int arrowAim;
+	
   public Hunter(int x, int y) {
     super(x, y);
     setDirection(Direction.NONE);
     
     imageList = new LinkedList<Icon>();
-    imageList.add(new ImageIcon("Images/VanDown.png"));
-    imageList.add(new ImageIcon("Images/VanUp.png"));
-    imageList.add(new ImageIcon("Images/VanLef2.png"));
-    imageList.add(new ImageIcon("Images/VanRight2.png"));
+    imageList.add(new ImageIcon("Images/VanUp1.png"));
+    imageList.add(new ImageIcon("Images/VanDown1.png"));
+    imageList.add(new ImageIcon("Images/VanRight1.png"));
+    imageList.add(new ImageIcon("Images/VanLeft1.png"));
     
   }
 
@@ -45,17 +48,15 @@ public class Hunter extends GameObject implements KeyListener {
         }
         break;
       case Direction.LEFT:
-        setX(getX() + getVelocity());
-        if (getX() + iconWidth > canvasWidth) {
-          setX((int)(canvasWidth - iconWidth));
-        }
-        break;
-      case Direction.RIGHT:
-        setX(getX() - getVelocity());
-        if (getX() < 0) {
-          setX(0);
-        }
-        break;
+    	    setX(getX() - getVelocity());
+    	    if (getX() < 0) setX(0);
+    	    break;
+
+    	case Direction.RIGHT:
+    	    setX(getX() + getVelocity());
+    	    if (getX() + iconWidth > canvasWidth)
+    	        setX(canvasWidth - iconWidth);
+    	    break;
 	default:
 		break;
     }
@@ -74,10 +75,10 @@ public class Hunter extends GameObject implements KeyListener {
 	      case Direction.DOWN:
 	        currentImage = 1;
 	        break;
-	      case Direction.LEFT:
+	      case Direction.RIGHT:
 	        currentImage = 2;
 	        break;
-	      case Direction.RIGHT:
+	      case Direction.LEFT:
 	        currentImage = 3;
 	        break;
 	    }
@@ -98,33 +99,41 @@ public class Hunter extends GameObject implements KeyListener {
       setDirection(Direction.UP);
       //test for the key press
       System.out.println("                                                                                                     UP button pressed");
+    arrowAim = getDirection();
     }
     if (e.getKeyCode() == KeyEvent.VK_DOWN||e.getKeyCode() == KeyEvent.VK_S) {
       setDirection(Direction.DOWN);
       //test for the key press
       System.out.println("                                                                                                     DOWN button pressed");
+      arrowAim = getDirection();
     }
-    if (e.getKeyCode() == KeyEvent.VK_RIGHT||e.getKeyCode() == KeyEvent.VK_D) {
+    if (e.getKeyCode() == KeyEvent.VK_LEFT||e.getKeyCode() == KeyEvent.VK_A) {
       setDirection(Direction.LEFT);
       //test for the key press
       System.out.println("                                                                                                     LEFT button pressed");
+      arrowAim = getDirection();
     }
-    if (e.getKeyCode() == KeyEvent.VK_LEFT||e.getKeyCode() == KeyEvent.VK_A) {
+    if (e.getKeyCode() == KeyEvent.VK_RIGHT||e.getKeyCode() == KeyEvent.VK_D) {
       setDirection(Direction.RIGHT);
       //test for the key press
       System.out.println("                                                                                                     RIGHT button pressed");
+      arrowAim = getDirection();
     }
     if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
+    //	arrowAim = getDirection(); 
     	setDirection(Direction.NONE); //makes sure the hunter doesn't move while shooting
-    	System.out.println("                                                                                                     PEW!!");
+    	//System.out.println("                                                                                                     PEW!!");
     }
   }
-  //tracks the position of the hunter so the vampire can follow
+  //tracks the position of the hunter so the vampire can follow and compare for when they meet
   public int trackex() {
 	  return this.getX();
   }
   public int trackey() {
 	  return this.getY();
+  }
+  public int aim() {
+	  return arrowAim;
   }
   
 }

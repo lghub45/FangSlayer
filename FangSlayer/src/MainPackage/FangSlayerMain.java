@@ -25,7 +25,7 @@ public class FangSlayerMain {
 		
 		
 	//make our protagonist 
-		Hunter VictorVanBadAss = new Hunter(200,200);
+		Hunter VictorVanBadAss = new Hunter(400,400);
 		//NOTE TO SELF SPAWN VAMPIRES ROUGHLY AT 0,0 EDGES OF MAP
 		minimap.addGameObject(VictorVanBadAss);
 		
