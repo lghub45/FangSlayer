@@ -71,6 +71,11 @@ public class Arrow extends GameObject{
 			default:
 				break;
 		    }
+		    //arrow is detroyed at the edge of the window
+		 //   if (getX() <= 0 || getY() <= 0 ||
+		   // 	    Math.abs(getX()+icon.getIconWidth()) >= c.getWidth() || Math.abs(getY()+icon.getIconHeight()) >= c.getHeight()) {
+		    //	    c.gameObjectList.remove(this);
+		    	//}
 	}
 
 	@Override

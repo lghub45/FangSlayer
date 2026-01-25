@@ -17,6 +17,8 @@ import Characters.Direction;
 import Characters.GameObject;
 import Characters.Hunter;
 import Characters.Vampire;
+import javax.swing.JLabel;
+import java.awt.Font;
 
 public class GameFrame extends JComponent implements ActionListener, KeyListener {
 	// DEFAULT SERIAL NUMBER
@@ -29,6 +31,9 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	private Hunter h;
 	private int index = 0; 
 	private int aimdir =0;
+	private int round=0;
+	private boolean onslaught; 
+	//private JLabel roundlbl;
 
 	public GameFrame() {
 		// make a list of characters
@@ -38,7 +43,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		frame = new JFrame("Minimap");
 		frame.setSize(1000, 1000);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(this);
+		frame.getContentPane().add(this);
 		
 		setFocusable(true);
 		requestFocusInWindow();
@@ -49,6 +54,16 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		
 		setFocusTraversalKeysEnabled(false);
 	    addKeyListener(this);
+	    
+	   // JLabel scorelbl = new JLabel("Score:");
+	    //scorelbl.setFont(new Font("Tahoma", Font.PLAIN, 25));
+	    //scorelbl.setBounds(10, 10, 266, 45);
+	    //add(scorelbl);
+	    
+	    //roundlbl = new JLabel("Round:");
+	    //roundlbl.setFont(new Font("Tahoma", Font.PLAIN, 25));
+	    //roundlbl.setBounds(10, 65, 266, 45);
+	    //add(roundlbl);
 
 		// show the window
 		frame.setVisible(true);
@@ -74,6 +89,9 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		for (GameObject s : gameObjectList) {
 			s.draw(this, g);
 		}
+		 g.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		    g.drawString("Score: 0", 10, 35);        // placeholder
+		    g.drawString("Round: " + round, 10, 70);
 	}
 	
 	
@@ -91,6 +109,12 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		}
 		//will keep checking if the hunter has been caught
 		aBitterEnd();
+		//will keep checking if any vampires have been hit by arrows
+		fretNot();
+		//if all vampires are dead more shall arise
+		ariiiiise();
+		 //arrow is detroyed at the edge of the window
+		arrowCheck();
 		
 		if (h!=null) {
 		aimdir = ((Hunter)gameObjectList.get(index)).aim();}
@@ -161,6 +185,103 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 					  System.out.println("The hunter has been caught by the vampire! Game Over!");
 					   System.exit(0);
 				  }
+			  }
+		  }
+	  }
+	  //this makes the vampires killable (arrows kill vampires)
+	  public void fretNot() {
+		  if (gameObjectList.size()<2) {
+			  return;
+		  }
+		  int deadVamp=100;
+		  int usedArrow=100;
+		  for (int v=0; v<gameObjectList.size();v++) {
+			  if (gameObjectList.get(v) instanceof Vampire) {
+				  for (int a=0; a<gameObjectList.size();a++) {
+					  if (gameObjectList.get(a) instanceof Arrow) {
+						  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 25 && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= 25) {
+							  System.out.println("A vampire has been slain by an arrow!");
+							  deadVamp=v;
+							  usedArrow=a;
+							 // gameObjectList.remove(v);
+							 // gameObjectList.remove(a);
+						  }
+						  }
+				  }
+			  }
+		  }
+		  if (deadVamp==100||usedArrow==100) {
+			  return;
+		  }
+		  else if(deadVamp>usedArrow) {
+		  gameObjectList.remove(deadVamp);
+		  gameObjectList.remove(usedArrow);
+		  }
+		  else {gameObjectList.remove(usedArrow);
+		  gameObjectList.remove(deadVamp);}
+		  }
+	  
+	  //spawns more vampires overt time
+	  public void ariiiiise() {
+		  //double checks all vamps are dead
+		  int vampcount=0;
+		  for (int v=0; v<gameObjectList.size();v++) {
+			  if (gameObjectList.get(v) instanceof Vampire) {
+				  vampcount=vampcount+1;
+			  }
+		  }
+		  boolean hunteralive=false;
+		  //double check hunter is alive (otherwise game just crashes =[)
+		  for (GameObject obj: gameObjectList) {
+			  if (obj instanceof Hunter) {
+				  index = gameObjectList.indexOf(obj);
+				  hunteralive=true;break;
+			  }
+		  }
+		  
+		  if (vampcount>0) {onslaught=true;return;}
+		  
+		  if (vampcount==0 && hunteralive) {
+			  onslaught=false;
+			  round=round+1;
+			  //roundlbl.setText("Round: "+round);
+			  for (int i=0;i<round+2;i++) {
+				  //generates a random corner of the window for the vampire to spawn at
+				  int corner = (int)(Math.random()*4);
+				  //spices up spawn location
+				  int LX = (int)(Math.random()*200);
+				  int RX = this.getWidth()- (int)(Math.random()*300)-200;
+				  int UY = (int)(Math.random()*200);
+				  int DY = this.getHeight()- (int)(Math.random()*300);
+				  
+				  
+				  switch(corner) {
+				  case 0: Vampire alucard = new Vampire(LX,UY);
+				  this.addGameObject(alucard); break;
+				  case 1: Vampire adamsandler = new Vampire(RX,UY);
+				  this.addGameObject(adamsandler);break;
+				  case 2: Vampire marceline = new Vampire(LX,DY);
+				  this.addGameObject(marceline);break;
+				  case 3: Vampire mrburns = new Vampire(RX,DY);
+				  this.addGameObject(mrburns);break;
+				  }
+				  
+			  }
+			  System.out.println("                                                                                                     ROUND:"+round);
+		  }
+		  if (gameObjectList.size()<2) {
+			  return;
+		  }
+	  }
+	  //arrow is detroyed at the edge of the window
+	  public void arrowCheck() {
+		  for (int i=0; i<gameObjectList.size();i++) {
+			  if (gameObjectList.get(i) instanceof Arrow) {
+				  Arrow arr = (Arrow)gameObjectList.get(i);
+				  if (arr.getX() <= 0 || arr.getY() <= 0 ||
+		    	    Math.abs(arr.getX()+arr.getCurrentImage().getIconWidth()) >= this.getWidth() || Math.abs(arr.getY()+arr.getCurrentImage().getIconHeight()) >= this.getHeight()) {
+		    	    gameObjectList.remove(arr);
+		  }
 			  }
 		  }
 	  }

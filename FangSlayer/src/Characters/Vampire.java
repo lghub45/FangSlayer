@@ -80,12 +80,11 @@ public class Vampire extends GameObject {
 	 //helps the vampire chase the hunter with their current position
 	 public void huntHim(int huntrx,int huntry) {
 		
+		 if(this.getY() > huntry+2) {setDirection(Direction.UP);setVelocity(5);}
+		 else if (this.getY() < huntry-2) {setDirection(Direction.DOWN);setVelocity(5);}
 		 
-		 if(this.getY() > huntry) {setDirection(Direction.UP);setVelocity(5);}
-		 else if (this.getY() < huntry) {setDirection(Direction.DOWN);setVelocity(5);}
 		 else if (this.getX() > huntrx) {setDirection(Direction.LEFT);setVelocity(5);}
 		 else if (this.getX()<huntrx) {setDirection(Direction.RIGHT);setVelocity(5);}
-		 
 	 }
 	 
 	 //just a formality since vampire doesn't need controls to move
@@ -104,3 +103,4 @@ public class Vampire extends GameObject {
 		  return this.getY();
 	  }
 }
+//

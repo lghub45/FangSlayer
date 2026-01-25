@@ -98,25 +98,25 @@ public class Hunter extends GameObject implements KeyListener {
     if (e.getKeyCode() == KeyEvent.VK_UP||e.getKeyCode() == KeyEvent.VK_W) {
       setDirection(Direction.UP);
       //test for the key press
-      System.out.println("                                                                                                     UP button pressed");
+      //System.out.println("                                                                                                     UP button pressed");
     arrowAim = getDirection();
     }
     if (e.getKeyCode() == KeyEvent.VK_DOWN||e.getKeyCode() == KeyEvent.VK_S) {
       setDirection(Direction.DOWN);
       //test for the key press
-      System.out.println("                                                                                                     DOWN button pressed");
+      //System.out.println("                                                                                                     DOWN button pressed");
       arrowAim = getDirection();
     }
     if (e.getKeyCode() == KeyEvent.VK_LEFT||e.getKeyCode() == KeyEvent.VK_A) {
       setDirection(Direction.LEFT);
       //test for the key press
-      System.out.println("                                                                                                     LEFT button pressed");
+      //System.out.println("                                                                                                     LEFT button pressed");
       arrowAim = getDirection();
     }
     if (e.getKeyCode() == KeyEvent.VK_RIGHT||e.getKeyCode() == KeyEvent.VK_D) {
       setDirection(Direction.RIGHT);
       //test for the key press
-      System.out.println("                                                                                                     RIGHT button pressed");
+      //System.out.println("                                                                                                     RIGHT button pressed");
       arrowAim = getDirection();
     }
     if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
