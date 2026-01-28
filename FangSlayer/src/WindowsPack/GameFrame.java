@@ -32,13 +32,15 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	private int index = 0; 
 	private int aimdir =0;
 	private int round=0;
+	private int score=0;
 	private boolean onslaught; 
-	//private JLabel roundlbl;
+	private int clock=0; //this will be used to help determine how the vampires spawn
+	private int clockbackup=clock;
+	private int toSpawn=0; //this will be used in conjuction to clock
 
 	public GameFrame() {
 		// make a list of characters
 		gameObjectList = new LinkedList<GameObject>();
-
 		//  make a window
 		frame = new JFrame("Minimap");
 		frame.setSize(1000, 1000);
@@ -90,7 +92,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 			s.draw(this, g);
 		}
 		 g.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		    g.drawString("Score: 0", 10, 35);        // placeholder
+		    g.drawString("Score: "+score, 10, 35);        // placeholder
 		    g.drawString("Round: " + round, 10, 70);
 	}
 	
@@ -107,6 +109,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 						}
 			}
 		}
+		//clock++;
 		//will keep checking if the hunter has been caught
 		aBitterEnd();
 		//will keep checking if any vampires have been hit by arrows
@@ -182,7 +185,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		  for (int i=0; i<gameObjectList.size();i++) {
 			  if (gameObjectList.get(i) instanceof Vampire) {
 				  if (Math.abs(gameObjectList.get(i).getX() - trackex()) <= 5 && Math.abs(gameObjectList.get(i).getY() - trackey()) <= 5) {
-					  System.out.println("The hunter has been caught by the vampire! Game Over!");
+					  System.out.println("The hunter has been caught by the vampire! Game Over! Your score was: "+score);
 					   System.exit(0);
 				  }
 			  }
@@ -199,10 +202,12 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 			  if (gameObjectList.get(v) instanceof Vampire) {
 				  for (int a=0; a<gameObjectList.size();a++) {
 					  if (gameObjectList.get(a) instanceof Arrow) {
-						  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 25 && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= 25) {
+						  //NOTE TO SELF: 25 WILL BE THE HARD MODE COLLISION SIZE, AND _____ WILL BE THE NORMAL MODE
+						  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 50 && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= 50) {
 							  System.out.println("A vampire has been slain by an arrow!");
 							  deadVamp=v;
 							  usedArrow=a;
+							  score+=15;
 							 // gameObjectList.remove(v);
 							 // gameObjectList.remove(a);
 						  }
@@ -225,6 +230,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	  public void ariiiiise() {
 		  //double checks all vamps are dead
 		  int vampcount=0;
+		  
 		  for (int v=0; v<gameObjectList.size();v++) {
 			  if (gameObjectList.get(v) instanceof Vampire) {
 				  vampcount=vampcount+1;
@@ -239,12 +245,18 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 			  }
 		  }
 		  
-		  if (vampcount>0) {onslaught=true;return;}
+		  //used to say && canspawn ==false {onslaught=true; return;}
+		  if (vampcount>0 && onslaught==true) {return;}
 		  
-		  if (vampcount==0 && hunteralive) {
-			  onslaught=false;
-			  round=round+1;
-			  //roundlbl.setText("Round: "+round);
+		  if (vampcount==0 && hunteralive) {toSpawn=round+2;onslaught=false;round=round+1;}
+		  
+		  //if (vampcount==0 && hunteralive) {
+			 // onslaught=false;
+			 // round=round+1;
+			  
+			  //in order to make the horde we need to make sure there's not an active wave and the clock has progressed forwards 
+			  if (!onslaught && toSpawn>clock) {
+				  clock++;
 			  for (int i=0;i<round+2;i++) {
 				  //generates a random corner of the window for the vampire to spawn at
 				  int corner = (int)(Math.random()*4);
@@ -256,7 +268,8 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 				  
 				  
 				  switch(corner) {
-				  case 0: Vampire alucard = new Vampire(LX,UY);
+				  case 0: 
+				  Vampire alucard = new Vampire(LX,UY);
 				  this.addGameObject(alucard); break;
 				  case 1: Vampire adamsandler = new Vampire(RX,UY);
 				  this.addGameObject(adamsandler);break;
@@ -267,8 +280,10 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 				  }
 				  
 			  }
-			  System.out.println("                                                                                                     ROUND:"+round);
 		  }
+			  if (clock==toSpawn) {toSpawn=0;clock=0;onslaught=true;}
+			  System.out.println("                                                                                                     ROUND:"+round);
+		 // }
 		  if (gameObjectList.size()<2) {
 			  return;
 		  }
@@ -286,3 +301,6 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		  }
 	  }
 }
+//first dev score(easy mode): 1305
+//first dev score (normal mode): 915
+//
