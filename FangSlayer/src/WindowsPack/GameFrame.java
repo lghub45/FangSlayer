@@ -34,9 +34,10 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	private int round=0;
 	private int score=0;
 	private boolean onslaught; 
-	private int clock=0; //this will be used to help determine how the vampires spawn
-	private int clockbackup=clock;
-	private int toSpawn=0; //this will be used in conjuction to clock
+	
+	private int toSpawn=0; //this will be used to determine when/how vampires spawn
+	private int haveSpawned=0;
+	private int w8amin=0;
 
 	public GameFrame() {
 		// make a list of characters
@@ -156,22 +157,36 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		  GameObject s = gameObjectList.get(index);
 		    s.setVelocity(20); 
 		    //if the fire key is pressed create a new arrow at the hunter's position that flies in the hunter's direction (away from hunter)
-		    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
-		    	Arrow arr = new Arrow(s.getX(),s.getY());
+		    //if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
+		    	//Arrow arr = new Arrow(s.getX(),s.getY());
 		    	//arr.setDirection(aimdir);
-		    	arr.setDirection(((Hunter) s).aim());
-		    	this.addGameObject(arr);
-		    	System.out.println("                                                                                                     PEW!!");
+		    	//arr.setDirection(((Hunter) s).aim());
+		    	//this.addGameObject(arr);
+		    	//System.out.println("                                                                                                     PEW!!");
 		    	//if the arrow hits the edge of the window remove it from game object list
 		    	//if(arr.getX()==this.getX()&&arr.getY()==this.getY()) {
 		    		//gameObjectList.remove(arr);
 		    	//}
-		    }
+		    //}
 	  }
 
 	  public void keyReleased(KeyEvent e) {
 	   GameObject s = gameObjectList.get(index);
 	    s.setVelocity(0); 
+	    
+	    //testing to see if releasing arrow button prevents "lazer beam" glitch
+	    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
+	    	Arrow arr = new Arrow(s.getX(),s.getY());
+	    	//arr.setDirection(aimdir);
+	    	arr.setDirection(((Hunter) s).aim());
+	    	this.addGameObject(arr);
+	    	System.out.println("                                                                                                     PEW!!");
+	    	//if the arrow hits the edge of the window remove it from game object list
+	    	//if(arr.getX()==this.getX()&&arr.getY()==this.getY()) {
+	    		//gameObjectList.remove(arr);
+	    	//}
+	    }
+	    
 	  }
 	  public int trackex() {
 		  return gameObjectList.get(index).getX();
@@ -202,7 +217,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 			  if (gameObjectList.get(v) instanceof Vampire) {
 				  for (int a=0; a<gameObjectList.size();a++) {
 					  if (gameObjectList.get(a) instanceof Arrow) {
-						  //NOTE TO SELF: 25 WILL BE THE HARD MODE COLLISION SIZE, AND _____ WILL BE THE NORMAL MODE
+						  //NOTE TO SELF: 25 WILL BE THE HARD MODE COLLISION SIZE, AND  50 WILL BE THE NORMAL MODE
 						  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 50 && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= 50) {
 							  System.out.println("A vampire has been slain by an arrow!");
 							  deadVamp=v;
@@ -228,66 +243,65 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	  
 	  //spawns more vampires overt time
 	  public void ariiiiise() {
-		  //double checks all vamps are dead
-		  int vampcount=0;
-		  
-		  for (int v=0; v<gameObjectList.size();v++) {
-			  if (gameObjectList.get(v) instanceof Vampire) {
-				  vampcount=vampcount+1;
-			  }
-		  }
-		  boolean hunteralive=false;
-		  //double check hunter is alive (otherwise game just crashes =[)
-		  for (GameObject obj: gameObjectList) {
-			  if (obj instanceof Hunter) {
-				  index = gameObjectList.indexOf(obj);
-				  hunteralive=true;break;
-			  }
-		  }
-		  
-		  //used to say && canspawn ==false {onslaught=true; return;}
-		  if (vampcount>0 && onslaught==true) {return;}
-		  
-		  if (vampcount==0 && hunteralive) {toSpawn=round+2;onslaught=false;round=round+1;}
-		  
-		  //if (vampcount==0 && hunteralive) {
-			 // onslaught=false;
-			 // round=round+1;
-			  
-			  //in order to make the horde we need to make sure there's not an active wave and the clock has progressed forwards 
-			  if (!onslaught && toSpawn>clock) {
-				  clock++;
-			  for (int i=0;i<round+2;i++) {
-				  //generates a random corner of the window for the vampire to spawn at
-				  int corner = (int)(Math.random()*4);
-				  //spices up spawn location
-				  int LX = (int)(Math.random()*200);
-				  int RX = this.getWidth()- (int)(Math.random()*300)-200;
-				  int UY = (int)(Math.random()*200);
-				  int DY = this.getHeight()- (int)(Math.random()*300);
-				  
-				  
-				  switch(corner) {
-				  case 0: 
-				  Vampire alucard = new Vampire(LX,UY);
-				  this.addGameObject(alucard); break;
-				  case 1: Vampire adamsandler = new Vampire(RX,UY);
-				  this.addGameObject(adamsandler);break;
-				  case 2: Vampire marceline = new Vampire(LX,DY);
-				  this.addGameObject(marceline);break;
-				  case 3: Vampire mrburns = new Vampire(RX,DY);
-				  this.addGameObject(mrburns);break;
-				  }
-				  
-			  }
-		  }
-			  if (clock==toSpawn) {toSpawn=0;clock=0;onslaught=true;}
-			  System.out.println("                                                                                                     ROUND:"+round);
-		 // }
-		  if (gameObjectList.size()<2) {
-			  return;
-		  }
+
+		    int vampCount = 0;
+		    boolean hunterAlive = false;
+
+		    for (GameObject obj : gameObjectList) {
+		        if (obj instanceof Vampire) vampCount++;
+		        if (obj instanceof Hunter) hunterAlive = true;
+		    }
+
+		    if (!hunterAlive) return;
+
+		    //start round if all vamps are dead
+		    if (vampCount == 0 && toSpawn == 0) {
+		        round++;
+		        toSpawn = round + 2;   // number of vamps per round
+		        haveSpawned = 0;
+		        w8amin = 0;
+		        onslaught = true;
+		        System.out.println("=== ROUND " + round + " START ===");
+		    }
+
+		    // slow vamp spawn R8
+		    if (onslaught && haveSpawned < toSpawn) {
+		        w8amin++;
+
+		        //if the timer between spawns is greater than the requirement of 8 ticks more vamps spawn
+		        if (w8amin >= 2) {
+		            w8amin = 0;
+		            necromancy();
+		            haveSpawned++;
+		        }
+		    }
+
+		    //no more will spawn
+		    if (haveSpawned >= toSpawn) {
+		        onslaught = false;
+		        toSpawn=0;haveSpawned=0;
+		    }
+		}
+	  
+	  
+	  private void necromancy() {
+		  int corner = (int)(Math.random()*4); 
+		  //spices up spawn location 
+		  int LX = (int)(Math.random()*200); 
+		  int RX = this.getWidth()- (int)(Math.random()*300)-200; 
+		  int UY = (int)(Math.random()*200); 
+		  int DY = this.getHeight()- (int)(Math.random()*300)-100; 
+		  switch(corner) { 
+		  case 0: Vampire alucard = new Vampire(LX,UY); 
+		  this.addGameObject(alucard);break; 
+		  case 1: Vampire adamsandler = new Vampire(RX,UY); 
+		  this.addGameObject(adamsandler);break; 
+		  case 2: Vampire marceline = new Vampire(LX,DY); 
+		  this.addGameObject(marceline);break; 
+		  case 3: Vampire mrburns = new Vampire(RX,DY); 
+		  this.addGameObject(mrburns);break; }
 	  }
+	  
 	  //arrow is detroyed at the edge of the window
 	  public void arrowCheck() {
 		  for (int i=0; i<gameObjectList.size();i++) {
@@ -303,4 +317,5 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 }
 //first dev score(easy mode): 1305
 //first dev score (normal mode): 915
-//
+//second dev score (normal mode): 2430 (no lazer tactic)
+//third dev score (normal mode): 7125 (after lazer glitch was removed)
