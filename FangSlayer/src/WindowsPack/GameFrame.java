@@ -38,6 +38,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	private int toSpawn=0; //this will be used to determine when/how vampires spawn
 	private int haveSpawned=0;
 	private int w8amin=0;
+	private String difficulty="";
 
 	public GameFrame() {
 		// make a list of characters
@@ -157,17 +158,20 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		  GameObject s = gameObjectList.get(index);
 		    s.setVelocity(20); 
 		    //if the fire key is pressed create a new arrow at the hunter's position that flies in the hunter's direction (away from hunter)
-		    //if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
-		    	//Arrow arr = new Arrow(s.getX(),s.getY());
-		    	//arr.setDirection(aimdir);
-		    	//arr.setDirection(((Hunter) s).aim());
-		    	//this.addGameObject(arr);
-		    	//System.out.println("                                                                                                     PEW!!");
+		    //this specific version is the original mechanics which makes the "lazer beam" glitch
+		    //this glitch is fine, but only on baby mode =]
+		    if (difficulty.equals("baby")) {
+		    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
+		    	Arrow arr = new Arrow(s.getX(),s.getY());
+		    	arr.setDirection(aimdir);
+		    	arr.setDirection(((Hunter) s).aim());
+		    	this.addGameObject(arr);
+		    	System.out.println("                                                                                                     PEW!!");
 		    	//if the arrow hits the edge of the window remove it from game object list
-		    	//if(arr.getX()==this.getX()&&arr.getY()==this.getY()) {
-		    		//gameObjectList.remove(arr);
-		    	//}
-		    //}
+		    	if(arr.getX()==this.getX()&&arr.getY()==this.getY()) {
+		    		gameObjectList.remove(arr);
+		    	}
+		    }}
 	  }
 
 	  public void keyReleased(KeyEvent e) {
@@ -175,6 +179,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	    s.setVelocity(0); 
 	    
 	    //testing to see if releasing arrow button prevents "lazer beam" glitch
+	    if (difficulty.equals("normal")||difficulty.equals("seasoned hunter")) {
 	    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
 	    	Arrow arr = new Arrow(s.getX(),s.getY());
 	    	//arr.setDirection(aimdir);
@@ -185,6 +190,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	    	//if(arr.getX()==this.getX()&&arr.getY()==this.getY()) {
 	    		//gameObjectList.remove(arr);
 	    	//}
+	    }
 	    }
 	    
 	  }
@@ -199,9 +205,15 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		  //makes sure we don't try to use the hunter before he exists
 		  for (int i=0; i<gameObjectList.size();i++) {
 			  if (gameObjectList.get(i) instanceof Vampire) {
-				  if (Math.abs(gameObjectList.get(i).getX() - trackex()) <= 5 && Math.abs(gameObjectList.get(i).getY() - trackey()) <= 5) {
+				  //has to be a high number like 25 instead of 5 otherwise the vampires just orbit the player
+				  if (Math.abs(gameObjectList.get(i).getX() - trackex()) <= 25 && Math.abs(gameObjectList.get(i).getY() - trackey()) <= 25) {
 					  System.out.println("The hunter has been caught by the vampire! Game Over! Your score was: "+score);
-					   System.exit(0);
+					  
+					  gameLoopTimer.stop();//ends the loop and prevents from infinite main menus
+					  frame.dispose(); //exits the gameframe
+					  MainFrame menu = new MainFrame(); //makes and opens the main menu
+					   menu.setVisible(true);
+					   return;
 				  }
 			  }
 		  }
@@ -218,14 +230,22 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 				  for (int a=0; a<gameObjectList.size();a++) {
 					  if (gameObjectList.get(a) instanceof Arrow) {
 						  //NOTE TO SELF: 25 WILL BE THE HARD MODE COLLISION SIZE, AND  50 WILL BE THE NORMAL MODE
-						  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 50 && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= 50) {
+						  if (difficulty!="seasoned hunter") {
+						  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 50 
+								  && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= 50) {
 							  System.out.println("A vampire has been slain by an arrow!");
 							  deadVamp=v;
 							  usedArrow=a;
 							  score+=15;
-							 // gameObjectList.remove(v);
-							 // gameObjectList.remove(a);
-						  }
+						  }}
+						  //if the difficulty is seasoned hunter the shots need to be more accurate
+						  else { if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 25 
+								  && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= 25) {
+							  System.out.println("A vampire has been slain by an arrow!");
+							  deadVamp=v;
+							  usedArrow=a;
+							  score+=15;
+						  }}
 						  }
 				  }
 			  }
@@ -257,7 +277,15 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		    //start round if all vamps are dead
 		    if (vampCount == 0 && toSpawn == 0) {
 		        round++;
-		        toSpawn = round + 2;   // number of vamps per round
+		        //# of vamps per round
+		        if (difficulty.equals("baby")) {
+		        toSpawn = round + 1;   }
+		        else if (difficulty.equals("seasoned hunter")) {
+		        toSpawn = round*2;	// >=]
+		        }
+		        else {//normal is the classic amount of zombies
+		        	toSpawn = round + 2; 
+		        }
 		        haveSpawned = 0;
 		        w8amin = 0;
 		        onslaught = true;
@@ -313,6 +341,12 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		  }
 			  }
 		  }
+	  }
+	  
+	  //sets the difficulty at the beginning of the game (impacts how many vampires spawn, how fast they spawn, how accurate your shots need to b
+	  //etc.)
+	  public void setDifficulty(String diff) {
+		  difficulty = diff;
 	  }
 }
 //first dev score(easy mode): 1305

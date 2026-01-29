@@ -12,6 +12,7 @@ import Characters.Hunter;
 import Characters.Vampire;
 //import Storage.DB;
 import WindowsPack.GameFrame;
+import WindowsPack.MainFrame;
 
 //NOTE TO SELF ADD CONFIRMATION THAT THE HUNTER IS THE FIRST OBJECT ADDED TO THE GAME OBJECT LIST
 
@@ -20,18 +21,18 @@ public class FangSlayerMain {
 	public static void main(String[] args)// throws SQLException
 	{
 		//make a canvas
-		 GameFrame minimap = new GameFrame();
-		//minimap.requestFocus();
+		// GameFrame minimap = new GameFrame();
+		SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
 		
 		
 	//make our protagonist 
-		Hunter VictorVanBadAss = new Hunter(400,400);
+		//Hunter VictorVanBadAss = new Hunter(400,400);
 		//NOTE TO SELF SPAWN VAMPIRES ROUGHLY AT 0,0 EDGES OF MAP
-		minimap.addGameObject(VictorVanBadAss);
+		//minimap.addGameObject(VictorVanBadAss);
 		
 		//Vampire vlad = new Vampire(0,0);
 		//minimap.addGameObject(vlad);
-		//Vampire mareceline = new Vampire(0,200);
+		//Vampire maraeceline = new Vampire(0,200);
 		//minimap.addGameObject(mareceline);
 		//Vampire mrburns = new Vampire(200,0);
 		//minimap.addGameObject(mrburns);
