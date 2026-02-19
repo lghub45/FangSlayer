@@ -66,10 +66,12 @@ public class MainFrame extends JFrame{
      		//minimap.addGameObject(VictorVanBadAss);
 	       });
 		
-		//work in progress (leaderboard button)
-		//leaderboardBtn.addActionListener(e -> {
-	      //   dispose();
-	       //});
+		//leaderboard button
+		leaderboardBtn.addActionListener(e -> {
+	         dispose();
+	       LeaderFrame liter = new LeaderFrame();
+	       liter.setVisible(true);
+	       });
 		
 		//exit button
 		exitBtn.addActionListener(e -> {

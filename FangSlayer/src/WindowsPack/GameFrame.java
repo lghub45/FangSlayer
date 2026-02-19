@@ -17,6 +17,8 @@ import Characters.Direction;
 import Characters.GameObject;
 import Characters.Hunter;
 import Characters.Vampire;
+import Storage.Scorage;
+import ScorePack.Score;
 import javax.swing.JLabel;
 import java.awt.Font;
 
@@ -32,7 +34,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	private int index = 0; 
 	private int aimdir =0;
 	private int round=0;
-	private int score=0;
+	private int point=0;
 	private boolean onslaught; 
 	
 	private int toSpawn=0; //this will be used to determine when/how vampires spawn
@@ -58,17 +60,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		
 		setFocusTraversalKeysEnabled(false);
 	    addKeyListener(this);
-	    
-	   // JLabel scorelbl = new JLabel("Score:");
-	    //scorelbl.setFont(new Font("Tahoma", Font.PLAIN, 25));
-	    //scorelbl.setBounds(10, 10, 266, 45);
-	    //add(scorelbl);
-	    
-	    //roundlbl = new JLabel("Round:");
-	    //roundlbl.setFont(new Font("Tahoma", Font.PLAIN, 25));
-	    //roundlbl.setBounds(10, 65, 266, 45);
-	    //add(roundlbl);
-
+	   
 		// show the window
 		frame.setVisible(true);
 
@@ -94,7 +86,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 			s.draw(this, g);
 		}
 		 g.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		    g.drawString("Score: "+score, 10, 35);        // placeholder
+		    g.drawString("Score: "+point, 10, 35);        // placeholder
 		    g.drawString("Round: " + round, 10, 70);
 	}
 	
@@ -163,7 +155,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		    if (difficulty.equals("baby")) {
 		    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
 		    	Arrow arr = new Arrow(s.getX(),s.getY());
-		    	arr.setDirection(aimdir);
+		    	//arr.setDirection(aimdir);
 		    	arr.setDirection(((Hunter) s).aim());
 		    	this.addGameObject(arr);
 		    	System.out.println("                                                                                                     PEW!!");
@@ -207,10 +199,32 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 			  if (gameObjectList.get(i) instanceof Vampire) {
 				  //has to be a high number like 25 instead of 5 otherwise the vampires just orbit the player
 				  if (Math.abs(gameObjectList.get(i).getX() - trackex()) <= 25 && Math.abs(gameObjectList.get(i).getY() - trackey()) <= 25) {
-					  System.out.println("The hunter has been caught by the vampire! Game Over! Your score was: "+score);
+					  System.out.println("The hunter has been caught by the vampire! Game Over! Your score was: "+point);
 					  
 					  gameLoopTimer.stop();//ends the loop and prevents from infinite main menus
 					  frame.dispose(); //exits the gameframe
+					  
+					  //checks the top 10 highscores in the database and adds the player score if it's high enough
+					  List <Score> scorelist = Scorage.getTopTen(); //returns the database (should be only 10 scores)
+					  
+					  //takes the user to the score input frame if the list is smaller than 10 
+					  //(shouldn't happen tho because this is a beta thing. the users should already have the top 10 scores)
+					  if (scorelist.size()<10) {
+						  ScoreFrame skills4bills = new ScoreFrame(point); //makes and opens a score frame
+						   skills4bills.setVisible(true);
+						   return;
+					  }
+					  //takes the user to the score input frame if their score is higher than any scores in the database
+					  for (int j=0; j<scorelist.size();j++) {
+					  if (point>= scorelist.get(j).getPoints()) {
+					  //should take the user to a menu to input their username and highscore to the database
+						  ScoreFrame skills4bills = new ScoreFrame(point); //makes and opens a score frame
+						   skills4bills.setVisible(true);
+						   return;
+					  }
+					  }
+					  
+					  
 					  MainFrame menu = new MainFrame(); //makes and opens the main menu
 					   menu.setVisible(true);
 					   return;
@@ -229,14 +243,19 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 			  if (gameObjectList.get(v) instanceof Vampire) {
 				  for (int a=0; a<gameObjectList.size();a++) {
 					  if (gameObjectList.get(a) instanceof Arrow) {
-						  //NOTE TO SELF: 25 WILL BE THE HARD MODE COLLISION SIZE, AND  50 WILL BE THE NORMAL MODE
-						  if (difficulty!="seasoned hunter") {
+						  if (!difficulty.equals("seasoned hunter")) {
 						  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 50 
 								  && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= 50) {
 							  System.out.println("A vampire has been slain by an arrow!");
 							  deadVamp=v;
 							  usedArrow=a;
-							  score+=15;
+							  //higher the difficulty means higher the bounty
+							  if (difficulty.equals("baby")) {point+=15;}  
+							  else if(difficulty.equals("seasoned hunter")) {
+								  if (round>=7) {point+=25+round;} //if the hunter is a pro they get a point multiplier for late rounds
+								  else{point+=25;}
+								  }
+							  else {point+=20;}
 						  }}
 						  //if the difficulty is seasoned hunter the shots need to be more accurate
 						  else { if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= 25 
@@ -244,7 +263,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 							  System.out.println("A vampire has been slain by an arrow!");
 							  deadVamp=v;
 							  usedArrow=a;
-							  score+=15;
+							  point+=15;
 						  }}
 						  }
 				  }

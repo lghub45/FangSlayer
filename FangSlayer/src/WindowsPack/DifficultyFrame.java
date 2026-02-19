@@ -40,7 +40,7 @@ public class DifficultyFrame extends JFrame{
 		
 		titlelbl = new JLabel("Choose your fate");
 		titlelbl.setFont(new Font("Pristina", Font.BOLD | Font.ITALIC, 25));
-		titlelbl.setBounds(156, 10, 131, 31);
+		titlelbl.setBounds(142, 10, 149, 31);
 		getContentPane().add(titlelbl);
 		
 		babyBtn = new JButton("Babyyy");
