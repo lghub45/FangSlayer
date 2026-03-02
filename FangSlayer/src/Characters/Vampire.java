@@ -16,10 +16,10 @@ public class Vampire extends GameObject {
 	 
 	 static {
 		 vampstates = new LinkedList<Icon>();
-		 vampstates.add(new ImageIcon("Images/VampUp1.png"));
-		 vampstates.add(new ImageIcon("Images/VampDown1.png"));
-		 vampstates.add(new ImageIcon("Images/VampLeft1.png"));
-		 vampstates.add(new ImageIcon("Images/VampRight1.png"));
+		 vampstates.add(new ImageIcon("Images/vampu2.png"));
+		 vampstates.add(new ImageIcon("Images/vampd2.png"));
+		 vampstates.add(new ImageIcon("Images/vampL2.png"));
+		 vampstates.add(new ImageIcon("Images/vampr2.png"));
 	 }
 	 
 	 

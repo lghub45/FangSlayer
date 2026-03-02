@@ -35,7 +35,8 @@ public class MainFrame extends JFrame{
 		setBounds(100, 100, 450, 300);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
-		
+		//sets the frame to full screen
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		titlelbl = new JLabel("Fang Slayer");
 		titlelbl.setFont(new Font("Pristina", Font.BOLD | Font.ITALIC, 25));
 		titlelbl.setBounds(156, 10, 131, 31);

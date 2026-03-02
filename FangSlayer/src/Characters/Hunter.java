@@ -11,17 +11,18 @@ import WindowsPack.GameFrame;
 public class Hunter extends GameObject implements KeyListener {
 
 	//this is used to help make arrows go in the correct direction when fired
-	public int arrowAim;
+	public int arrowAim=Direction.UP;//default value so no frozen arrows at the start of the game
 	
   public Hunter(int x, int y) {
     super(x, y);
-    setDirection(Direction.NONE);
-    
+    //used to be Direction.NONE
+    setDirection(Direction.UP); //need to set direction AT THE START otherwise an arrow "booby trap glitch" occurs (arrow freezes in place)
+    							 //note to self: maybe we can make a beartrap item that utilizes this glitch on purpose? 
     imageList = new LinkedList<Icon>();
-    imageList.add(new ImageIcon("Images/VanUp1.png"));
-    imageList.add(new ImageIcon("Images/VanDown1.png"));
-    imageList.add(new ImageIcon("Images/VanRight1.png"));
-    imageList.add(new ImageIcon("Images/VanLeft1.png"));
+    imageList.add(new ImageIcon("Images/huntu2.png"));
+    imageList.add(new ImageIcon("Images/huntd2.png.png"));
+    imageList.add(new ImageIcon("Images/huntr2.png.png"));
+    imageList.add(new ImageIcon("Images/huntL2.png.png"));
     
   }
 
@@ -135,5 +136,18 @@ public class Hunter extends GameObject implements KeyListener {
   public int aim() {
 	  return arrowAim;
   }
+  
+  //note to self remove these or comment them out for the final version
+	public int getHeight() {
+		 Icon icon = getCurrentImage();
+		    int  iconHeight    = icon.getIconHeight();
+		    return iconHeight;
+	}
+	
+	public int getWidth() {
+		 Icon icon = getCurrentImage();
+		    int  iconWidth    = icon.getIconWidth();
+		    return iconWidth;
+	}
   
 }
