@@ -19,10 +19,10 @@ public class Hunter extends GameObject implements KeyListener {
     setDirection(Direction.UP); //need to set direction AT THE START otherwise an arrow "booby trap glitch" occurs (arrow freezes in place)
     							 //note to self: maybe we can make a beartrap item that utilizes this glitch on purpose? 
     imageList = new LinkedList<Icon>();
-    imageList.add(new ImageIcon("Images/huntu2.png"));
-    imageList.add(new ImageIcon("Images/huntd2.png.png"));
-    imageList.add(new ImageIcon("Images/huntr2.png.png"));
-    imageList.add(new ImageIcon("Images/huntL2.png.png"));
+    imageList.add(new ImageIcon("Images/huntu2.png"));//up
+    imageList.add(new ImageIcon("Images/huntd2.png.png"));//down
+    imageList.add(new ImageIcon("Images/huntr2.png.png"));//right
+    imageList.add(new ImageIcon("Images/huntL2.png.png"));//left
     
   }
 
@@ -149,5 +149,23 @@ public class Hunter extends GameObject implements KeyListener {
 		    int  iconWidth    = icon.getIconWidth();
 		    return iconWidth;
 	}
+	
+	//changes images to silver dagger
+	public void sliceAndDice(){
+		imageList.clear();
+		imageList.add(new ImageIcon("Images/shankup.png"));//up
+		imageList.add(new ImageIcon("Images/shankdown.png"));//down
+		imageList.add(new ImageIcon("Images/shankright.png"));//right
+		imageList.add(new ImageIcon("Images/shankleft.png"));//left
+	}
+	
+	//changes imagesto crossbow
+		public void bowBack(){
+			imageList.clear();
+			  imageList.add(new ImageIcon("Images/huntu2.png"));//up
+			    imageList.add(new ImageIcon("Images/huntd2.png.png"));//down
+			    imageList.add(new ImageIcon("Images/huntr2.png.png"));//right
+			    imageList.add(new ImageIcon("Images/huntL2.png.png"));//left
+		}
   
 }

@@ -130,7 +130,7 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		    }
 		    if (woodenStake) {
 		    	if (woodenStakecount>0) {
-		    	g.drawString("Wooden Stakes: "+(woodenStakecount-1), 1300, 750); }
+		    	g.drawString("Wooden Stakes: "+woodenStakecount, 1300, 750); }
 		    	//phantom stake glitch where last one isn't used so we just display one less than the actual count 
 		    	else {g.drawString("Wooden Stakes: 0", 1300, 750);}
 		    }
@@ -223,12 +223,16 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		    	//one wooden stake is used per shot 
 		    	if (woodenStake && woodenStakecount>0) {
 		 	     woodenStakecount--;
+		 	     woodenStake=true; //using wooden stakes instead of regular arrows
 		 	      }
-		    	if (woodenStakecount==0) {
+		    	else if (woodenStakecount==0) {
 		    		woodenStake=false;//auto switch to regular arrows when out of stakes
 		    	}
 		    	
-		    	Arrow arr = new Arrow(s.getX(),s.getY());
+		    	Arrow arr = new Arrow(s.getX(),s.getY(),woodenStake);
+		    	if (woodenStake && woodenStakecount>0) { //makes sure we are using wooden stake images instead of regular arrows
+		    		arr.setWood(true);
+		    	}
 		    	//arr.setDirection(aimdir);
 		    	arr.setDirection(((Hunter) s).aim());
 		    	this.addGameObject(arr);
@@ -247,17 +251,20 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 			   crossbow=true;
 			   silverDagger=false;
 			   woodenStake=false; //just in case the player had a different item equipped before
+			   h.bowBack();//switch to crossbow images
 		   }
-		   if (e.getKeyCode()==KeyEvent.VK_2) {
+		   if (e.getKeyCode()==KeyEvent.VK_2 && daggercount>0) {//makes sure you actually have daggers before equipping
 			   System.out.println("Silver Dagger equipped");
 			   crossbow=false;
 			   silverDagger=true;
+			   h.sliceAndDice();//switch to the dagger images
 		   }
-		   if (e.getKeyCode()==KeyEvent.VK_3) {
+		   if (e.getKeyCode()==KeyEvent.VK_3 && woodenStakecount>0) {//double checks stake count before equipping
 			   System.out.println("Wooden Stakes equipped");
 			   crossbow=true;//wooden stake is a variation of arrows
 			   silverDagger=false;
 			   woodenStake=true;
+			   h.bowBack();//switch to crossbow images (just for visuals.. the stakes are still fired)
 		   }
 	  }
 
@@ -271,7 +278,14 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 	    //testing to see if releasing arrow button prevents "lazer beam" glitch
 	    if (difficulty.equals("normal")||difficulty.equals("seasoned hunter")) {
 	    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
-	    	Arrow arr = new Arrow(s.getX(),s.getY());
+	    	if (woodenStake && woodenStakecount>0) {
+		 	     woodenStakecount--;
+		 	     woodenStake=true; //using wooden stakes instead of regular arrows
+		 	      }
+		    	else if (woodenStakecount==0) {
+		    		woodenStake=false;//auto switch to regular arrows when out of stakes
+		    	}
+	    	Arrow arr = new Arrow(s.getX(),s.getY(),woodenStake);
 	    	if (woodenStake && woodenStakecount>0) { //makes sure we are using wooden stake images instead of regular arrows
 	    		arr.setWood(true);
 	    	}
@@ -351,6 +365,8 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 							  daggercount--; //lose one dagger use
 							  if (daggercount==0) {
 								  crossbow=true; //automatically switch back to crossbow when no more dagger uses
+								  h.bowBack(); // back to crossbow images
+								  silverDagger=false;
 							  }
 							  break;
 						  }
@@ -446,14 +462,14 @@ public class GameFrame extends JComponent implements ActionListener, KeyListener
 		    if (vampCount == 0 && toSpawn == 0) {
 		        round++;
 		        
-		        //every 5 rounds hunter gets a special gadget (silver dagger is the only one right now)
+		        //every 5 rounds hunter gets a special item (rn we have silver dagger of wooden stake)
 		        if (round%5==0) {
 		        	int rand = (int) (Math.random()*2)+1;//gives either a wooden stake or silver dagger every 5 rounds
-		        	//rand=2;//TEMPORARY TESTING
+		        	//rand=1;//TEMPORARY TESTING
 		        	if(rand==1) {
-		        	daggercount=5;} //reset dagger uses to 5		        
+		        	daggercount+=5;} //reset dagger uses to 5		        
 		        	if (rand==2) {
-		        		woodenStakecount=4; //gives 3 wooden stakes (4 one is glitched/phantom stake)
+		        		woodenStakecount+=3; //give 3 stakes
 		        	}
 		        }
 		        

@@ -12,7 +12,7 @@ public class Arrow extends GameObject{
 
 	
 	public boolean woodenStake = false; //used to determine if the arrow is a wooden stake (good for switching out image files)
-	public Arrow(int x, int y) {
+	public Arrow(int x, int y,boolean woodenStake) {
 		super(x,y);
 		
 		if (!woodenStake){
@@ -22,7 +22,8 @@ public class Arrow extends GameObject{
 	    imageList.add(new ImageIcon("Images/ArrowLeft1.png"));
 	    imageList.add(new ImageIcon("Images/ArrowRight1.png"));
 	    }else{
-	     imageList.add(new ImageIcon("Images/SteakUp1.png"));
+	    imageList = new LinkedList<Icon>();
+	    imageList.add(new ImageIcon("Images/SteakUp1.png"));
 	    imageList.add(new ImageIcon("Images/SteakDown1.png"));
 	    imageList.add(new ImageIcon("Images/SteakLeft1.png"));
 	    imageList.add(new ImageIcon("Images/SteakRight1.png")); }
