@@ -1,3 +1,4 @@
+
 package MainPackage;
 
 import java.sql.SQLException;
@@ -12,6 +13,7 @@ import javax.swing.SwingUtilities;
 import Characters.Hunter;
 import Characters.Vampire;
 import Storage.DataBase;
+import WindowsPack.FangSlayerWindow;
 //import Storage.DB;
 import WindowsPack.GameFrame;
 import WindowsPack.MainFrame;
@@ -30,7 +32,7 @@ public class FangSlayerMain {
 			e.printStackTrace();
 		}
 		//make a main menu frame
-			SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
+			SwingUtilities.invokeLater(() -> new FangSlayerWindow());//used to be MainFrame
 	}
 //best dev highscore (normal) 8550 =]
 }

@@ -75,6 +75,7 @@ public abstract class GameObject implements KeyListener {
 	
 	//ABSTRACT METHODS
 	public abstract void move(GameFrame c); //used to be Canvas c
+	//public abstract void move(BloodMoonFrame c);
 	public abstract void setImage();
 
 	//public void autoMove() {

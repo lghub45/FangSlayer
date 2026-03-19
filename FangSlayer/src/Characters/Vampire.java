@@ -13,6 +13,7 @@ public class Vampire extends GameObject {
 	 public int clock=0;
 	 
 	 private static LinkedList<Icon> vampstates;
+	 private static LinkedList<Icon> wolfstates;
 	 
 	 static {
 		 vampstates = new LinkedList<Icon>();
@@ -21,13 +22,26 @@ public class Vampire extends GameObject {
 		 vampstates.add(new ImageIcon("Images/vampL2.png"));
 		 vampstates.add(new ImageIcon("Images/vampr2.png"));
 	 }
+	 static {
+		 wolfstates=new LinkedList<Icon>();
+		 wolfstates.add(new ImageIcon("Images/huskyu2.png"));
+		 wolfstates.add(new ImageIcon("Images/huskyd.png"));
+		 wolfstates.add(new ImageIcon("Images/huskyL.png"));
+		 wolfstates.add(new ImageIcon("Images/huskyr.png"));
+	 }
 	 
-	 
-	 public Vampire(int x, int y) {
+	 public Vampire(int x, int y,int monster) {
 		    super(x, y);
 		    setDirection(Direction.NONE);
 		    
-		    imageList = vampstates;
+		    if(monster==0) {
+		    imageList = vampstates;}
+		    else if (monster==1) {
+		    	imageList=wolfstates;
+		    }
+		    else {
+		    	imageList = vampstates;//just in case
+		    }
 		    
 		    //imageList = new LinkedList<Icon>();
 		    //imageList.add(new ImageIcon("Images/VampUp1.png"));

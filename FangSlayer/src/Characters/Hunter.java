@@ -13,16 +13,36 @@ public class Hunter extends GameObject implements KeyListener {
 	//this is used to help make arrows go in the correct direction when fired
 	public int arrowAim=Direction.UP;//default value so no frozen arrows at the start of the game
 	
-  public Hunter(int x, int y) {
+  public Hunter(int x, int y, int cheat) {
     super(x, y);
     //used to be Direction.NONE
     setDirection(Direction.UP); //need to set direction AT THE START otherwise an arrow "booby trap glitch" occurs (arrow freezes in place)
     							 //note to self: maybe we can make a beartrap item that utilizes this glitch on purpose? 
     imageList = new LinkedList<Icon>();
+    if (cheat==1) {
+    	imageList.clear();
     imageList.add(new ImageIcon("Images/huntu2.png"));//up
     imageList.add(new ImageIcon("Images/huntd2.png.png"));//down
     imageList.add(new ImageIcon("Images/huntr2.png.png"));//right
     imageList.add(new ImageIcon("Images/huntL2.png.png"));//left
+    }
+    else if (cheat==2) {
+    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyu.png")));
+    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyd.png")));
+    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyr.png")));
+    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyL.png")));
+    	imageList.clear();
+    	imageList.add(new ImageIcon("Images/groovyu.png"));//up
+    	imageList.add(new ImageIcon("Images/groovyd.png"));//down
+    	imageList.add(new ImageIcon("Images/groovyr.png"));//right
+    	imageList.add(new ImageIcon("Images/groovyL.png"));//left
+    }
+    else {
+        imageList.add(new ImageIcon("Images/huntu2.png"));//up
+        imageList.add(new ImageIcon("Images/huntd2.png.png"));//down
+        imageList.add(new ImageIcon("Images/huntr2.png.png"));//right
+        imageList.add(new ImageIcon("Images/huntL2.png.png"));//left
+    }
     
   }
 
@@ -167,5 +187,6 @@ public class Hunter extends GameObject implements KeyListener {
 			    imageList.add(new ImageIcon("Images/huntr2.png.png"));//right
 			    imageList.add(new ImageIcon("Images/huntL2.png.png"));//left
 		}
+	
   
 }
