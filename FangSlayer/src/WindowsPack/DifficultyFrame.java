@@ -118,17 +118,17 @@ public class DifficultyFrame extends JPanel{
 		
 		babyRadio = new JRadioButton("Baby");
 		babyRadio.setFont(new Font("Viner Hand ITC", Font.PLAIN, 20));
-		babyRadio.setBounds(1242, 245, 149, 31);
+		babyRadio.setBounds(1242, 245, 225, 31);
 		add(babyRadio);
 		
 		normalRadio = new JRadioButton("Normal");
 		normalRadio.setFont(new Font("Viner Hand ITC", Font.PLAIN, 20));
-		normalRadio.setBounds(1242, 290, 149, 31);
+		normalRadio.setBounds(1242, 290, 225, 31);
 		add(normalRadio);
 		
 		hardRadio = new JRadioButton("Seasoned Hunter");
 		hardRadio.setFont(new Font("Viner Hand ITC", Font.PLAIN, 20));
-		hardRadio.setBounds(1242, 335, 149, 31);
+		hardRadio.setBounds(1242, 335, 225, 31);//used to be 1242, 335, 149, 31
 		add(hardRadio);
 		
 		vampRadio = new JRadioButton("Castle of the Damned");
@@ -142,8 +142,8 @@ public class DifficultyFrame extends JPanel{
 		Image scaledimg=bloodimg.getScaledInstance(229, 31, java.awt.Image.SCALE_SMOOTH);
 		ImageIcon scaledblood = new ImageIcon(scaledimg);
 		
-		//wolfRadio = new JRadioButton("Blood Moon Forest");
-		wolfRadio = new JRadioButton(scaledblood);
+		wolfRadio = new JRadioButton("Blood Moon Forest");
+		//wolfRadio = new JRadioButton(scaledblood);
 		wolfRadio.setFont(new Font("Viner Hand ITC", Font.PLAIN, 20));
 		wolfRadio.setBounds(162, 290, 229, 31);//og: 242, 290, 149, 31  form fitting:202, 290, 189, 31
 		add(wolfRadio);

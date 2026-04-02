@@ -15,6 +15,8 @@ public class FangSlayerWindow extends JFrame{
 	private int prim;
 	//private JFrame frame;
 	private boolean jamsesh;
+	private String savemap;//may be used to save the map for the score screen
+	public boolean lazertrue;
 
 	/**
 	 * Create the application.
@@ -35,6 +37,7 @@ public class FangSlayerWindow extends JFrame{
 		DifficultyFrame diff = new DifficultyFrame(this);
 		score = new ScoreFrame(this);
 		CheatWindow cheat = new CheatWindow(this);
+		lazertrue=false;
 		
 		menucontainer.add(main,"Main");
 		menucontainer.add(diff,"Difficulty");
@@ -51,7 +54,9 @@ public class FangSlayerWindow extends JFrame{
 		menus.show(menucontainer, menu);
 	}
 	public void difficultySelect(String difficulty,String map) {
+		savemap=map;
 		game.jamsesh = jamsesh;
+		game.lazertrue = lazertrue;
 		game.startSlayin(difficulty,map,prim);
 		menus.show(menucontainer, "Game");//loads a game
 		//game.intialPrim(prim); //1 is crossbow 2 is boomstick
@@ -61,12 +66,18 @@ public class FangSlayerWindow extends JFrame{
 	public void youDaChamp(int points) {
 		menus.show(menucontainer, "Score");
 		score.setPoints(points);
+		score.setBackground(savemap);
 	}
 	public void setPrim(int weaponOChoice) {
 		prim=weaponOChoice;//1 is crossbow 2 is boomstick
 	}
 	public void setJamsesh(boolean toggle) {
 		jamsesh=toggle;
+	}
+	
+	public void setLazer(boolean beam) {
+	    this.lazertrue = beam;
+	    game.lazertrue = beam; 
 	}
 
 }

@@ -75,7 +75,7 @@ public class MainFrame extends JPanel{
 		leaderboardBtn.setBounds(630, 455, 221, 50);
 		add(leaderboardBtn);
 		
-		cheatBtn = new JButton("Cheat Codes");
+		cheatBtn = new JButton("Options");
 		cheatBtn.setFont(new Font("Viner Hand ITC", Font.PLAIN, 25));
 		cheatBtn.setBounds(630, 555, 221, 50);
 		add(cheatBtn);

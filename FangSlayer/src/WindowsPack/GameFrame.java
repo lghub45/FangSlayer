@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import Characters.Arrow;
+import Characters.CursedSkull;
 import Characters.Direction;
 import Characters.GameObject;
 import Characters.Hunter;
@@ -53,7 +54,7 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 	private int aimdir =0;
 	private int round=0;
 	private int point=0;
-	private int phase=0; //boss phase
+	private int phase=1; //boss phase
 	private boolean onslaught; 
 	
 	private int toSpawn=0; //this will be used to determine when/how vampires spawn
@@ -72,6 +73,12 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 	private boolean boomstick;
 	private long lastshot=0;
 	private long boomcool=750;//the boomstick has a slight cooldown after firing 250 milliseconds= .25 seconds
+	private long magiccool=250;//the boomstick has a slight cooldown after firing 250 milliseconds= .25 seconds
+	private long vladcool=65;//vlad has a grace period after being hit (prevents instakill bugs) 250 milliseconds = .25 seconds
+	private long vladhit=0;
+	private boolean vladdamage; //vlad needs hist grace period and this is the just in case
+	private long spellcool=0;
+	private long wizardtime=0;//helps give vlad magic fireballs instead of a f---ing lazer beam
 	
 	private boolean silverDagger=false; //a special item for later
 	private boolean woodenStake=false; // toggle to make arrows into wooden stakes (pierces thru multiple vamps) 
@@ -83,7 +90,12 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 	public boolean jamsesh;
 	
 	private int vladlife;
+	private int intVladLife;
 	private GameObject vladsDemise;
+	private boolean vladstruck;
+	private boolean finalstand;
+	private int vampcounter=0; // used in phase 2 to keep track of how many vamps killed to provide special items
+	public boolean lazertrue=false;
 	
 	public GameFrame(FangSlayerWindow window) {
 		this.window=window;
@@ -131,6 +143,10 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 	public void startSlayin(String diff,String map,int prim) {
 		difficulty = diff;
 		this.map=map;
+		vladsDemise=null;
+		vladstruck=false;
+		finalstand=false;
+		
 		//just in case: reset all the things
 		gameObjectList.clear(); round=0; point=0; daggercount=0; woodenStakecount=0;
 		
@@ -138,9 +154,18 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		
 		//preps the boss battle
 		  if (map.equals("finalboss")) {
-		    	vladlife=3;//SET THIS TO 13 WHEN DONE CODING BOSS BATTLE
+			 if (difficulty.equals("baby")){vladlife=3; intVladLife=3;}//13
+			 else if (difficulty.equals("nightmare")){vladlife=130; intVladLife=130;}
+			 else if (difficulty.equals("seasoned hunter")){vladlife=26;intVladLife=26;}//used to be 52, but too hard
+			 else {vladlife=26;intVladLife=26;}//normal diff
+		    	//vladlife=26;//used to be 13 the 169 then 26
+		    	//intVladLife=26;//this is a CONSTANT (doesn't change)
+		    	phase=1;
 		    	//spawns him with 13 hearts of health at the dead center top of the map
-		    	this.addGameObject(new Vlad((this.window.getWidth())/2,200,0));
+		    	Vlad vlad = new Vlad(625,30,0);
+		    	//this.addGameObject(new Vlad(650,40,0));//this.window.getWidth())/2
+		    	this.addGameObject(vlad);
+		    	vlad.setWindowInfo(this.window.getWidth(), this.window.getHeight());
 		    }
 		
 		//set the background
@@ -151,7 +176,9 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 				background = ImageIO.read(new File("Images/bloodmoonforest.png"));
 			  }
 			  else if (map.equals("finalboss")) {
-				  background = ImageIO.read(new File("Images/tempbackgrnd.png")); //TEMPORARY BACKGROUND
+				  if (phase!=3) { background = ImageIO.read(new File("Images/bossphase1.png"));}
+				  else { background = ImageIO.read(new File("Images/bossphase3.png"));}
+				  //background = ImageIO.read(new File("Images/tempbackgrnd.png")); //TEMPORARY BACKGROUND
 			  }
 		    } catch (IOException e) {
 		        e.printStackTrace();
@@ -215,13 +242,19 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		}
 		//draw the score and round numbers
 		 g.setFont(new Font("Viner Hand ITC", Font.PLAIN, 25));
-		 if (!map.equals("finaboss")) {
-		 if (map.equals("wolves")) {g.setColor(Color.red);}
+		 g.setColor(Color.red);
+		 if (map.equals("finalboss")) {g.drawString("Phase: "+phase, 10, 35); }
+		 //if (map.equals("wolves")) {
+			// g.setColor(Color.red);
+			 //}
+		 else {
 		    g.drawString("Score: "+point, 10, 35);        // placeholder
 		    g.drawString("Round: " + round, 10, 70);
-		    g.drawString("Daggers: " + daggercount, 10, 105);
-		    g.drawString("Difficulty: "+difficulty,10,140);}
-		 else {g.drawString("Phase: "+phase, 10, 35); }
+		    //g.drawString("Daggers: " + daggercount, 10, 105);
+		    g.drawString("Difficulty: "+difficulty,10,140);
+		// else {g.drawString("Phase: "+phase, 10, 35); 
+		    }
+		 g.drawString("Daggers: " + daggercount, 10, 105);
 		    if (crossbow && !woodenStake) {
 		    	g.drawString("Crossbow", 1400, 750);
 		    }
@@ -255,6 +288,36 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 					vamps.huntHim(trackex(),trackey());
 						}
 			}
+			//double checks vlad phase 1 and that there actually will be a vlad
+			if(map.equals("finalboss")&&phase==1) {
+				for (int i=0; i<gameObjectList.size();i++) {
+				if (gameObjectList.get(i) instanceof Vlad) {
+				Vlad vlal = (Vlad)gameObjectList.get(i);
+				vlal.aimSkullFire(trackex(),trackey());//confirm the shot
+				long currenttime = System.currentTimeMillis();
+				if (vlal.permissionToFire()&&currenttime - wizardtime >= magiccool) {
+					//it's wizard time mfer! FIREBALL!!!
+					CursedSkull ghostrider = new CursedSkull(vlal.getX(),vlal.getY());
+					gameObjectList.add(ghostrider);
+					ghostrider.setDirection(Direction.DOWN);
+					vlal.reload();
+					wizardtime=System.currentTimeMillis();
+				}
+				}
+				}
+			}
+			
+			//double checks that vlad is in phase 3 / at 6 or less health
+			if (vladlife<= (intVladLife*1/3) &&phase==3) {
+				for (int i=0; i<gameObjectList.size();i++) {
+				if (gameObjectList.get(i) instanceof Vlad) {
+					Vlad vlal = (Vlad)gameObjectList.get(i); //casting just in case
+					vlal.nextPhase(phase);//sets to phase 3 
+					System.out.println(phase+" phase");
+					vlal.takeFlight(trackex(),trackey());
+					
+						}
+			}}
 		}
 		
 		//note: used to be AFTER arrowCheck()p
@@ -270,17 +333,54 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 				gameObject.setImage();
 				//System.out.println("                                                                    Hunter position:"+ trackex()+","+trackey());
 			}
-		
+			//vladstruck=false;
 		//clock++;
 		//will keep checking if any vampires have been hit by arrows/daggers  (run BEFORE abitterend to confirm that hunter isn't killed 
 			//while using a dagger)
-		fretNot();
+			
+		//if (map.equals("finalboss")) {
+		//long currenttime = System.currentTimeMillis();
+			//if (currenttime - vladhit >= vladcool) {
+			//fretNot();}}
+		//else {
+			fretNot();
+			//}
 			
 		//will keep checking if the hunter has been caught
 		aBitterEnd();
 		//if all vampires are dead more shall arise (ONLY IF NOT ON FINAL BOSS. Vlad controls vampires spawning there)
 		if (!map.equals("finalboss")) {
 		ariiiiise();}
+		//cool down SPECIFICALLY in phase 2 for spawning vampires
+		else if (map.equals("finalboss")&&phase==2) {
+			long currenttime = System.currentTimeMillis();
+			if (currenttime - spellcool >= 750) {
+			
+				necromancy(); 
+			
+				spellcool = System.currentTimeMillis();}}
+		else if (map.equals("finalboss")&&phase==3) {
+			if (!finalstand) {
+			try {
+				background = ImageIO.read(new File("Images/bossphase3.png"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			finalstand=true;
+			}
+			
+			//for (GameObject vamp : gameObjectList) {
+				//if (vamp instanceof Vampire) {
+				//gameObjectList.remove(vamp);}
+			//}
+			for (int i = gameObjectList.size() - 1; i >= 0; i--) {
+			    if (gameObjectList.get(i) instanceof Vampire) {
+			        gameObjectList.remove(i);
+			    }
+			}
+		}
+		
+		
 		 //arrow is detroyed at the edge of the window
 		arrowCheck();
 		setPrimary(primary);//sets the primary weapon
@@ -311,14 +411,7 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 	  }
 
 //functionality for arrows and special items
-	  public void keyPressed(KeyEvent e) {
-		  //looks for the hunter
-		  //for (GameObject obj: gameObjectList) {
-			//  if (obj instanceof Hunter){
-				//  h = (Hunter)obj;
-				  //index= gameObjectList.indexOf(obj);
-			  //}
-		  //}
+	  public void keyPressed(KeyEvent e) {//--------------------------------------------------------------------------
 		  gameObjectList.get(index).keyPressed(e);
 		  GameObject s = gameObjectList.get(index);
 		    s.setVelocity(20); 
@@ -326,8 +419,9 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		    //this specific version is the original mechanics which makes the "lazer beam" glitch
 		    //this glitch is fine, but only on baby mode =]
 		    //checks to see if crossbow is equipped before trying to shoot
+		    
+		    if (lazertrue==true) {  //LAZER BEAM GLITCH only works with the lazer beam cheat code
 		    if (crossbow) {
-		    if (difficulty.equals("baby")) {
 		    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
 		    	//one wooden stake is used per shot 
 		    	if (woodenStake && woodenStakecount>0) {
@@ -352,8 +446,64 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		    	if(arr.getX()==this.getX()&&arr.getY()==this.getY()) {
 		    		gameObjectList.remove(arr);
 		    	}
-		    }}}
-		    
+		    }}
+		    if(boomstick) {
+		    	boomcool = 250; //significant decrease in cooldown
+		    	
+			    //testing to see if releasing arrow button prevents "lazer beam" glitch
+			   
+			    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
+			    	if (woodenStake && woodenStakecount>0) {
+				 	     woodenStakecount--;
+				 	     //woodenStake=true; //using wooden stakes instead of regular arrows
+				 	      }
+				    	else if (woodenStakecount==0) {
+				    		woodenStake=false;//auto switch to regular arrows when out of stakes
+				    	}
+			    	Arrow arr = new Arrow(s.getX(),s.getY(),true);
+			    	
+			    	//should only have ONE wooden stake and not 3
+			    	if (woodenStake && woodenStakecount>0) { //makes sure we are using wooden stake images instead of regular arrows
+			    		arr.setWood(true);
+			    	
+			    	//arr.setDirection(aimdir);
+			    	arr.setDirection(((Hunter) s).aim());
+			    	this.addGameObject(arr);
+			    	return;}
+			    	
+			    	long current = System.currentTimeMillis();
+			    	if (current-lastshot>=boomcool) {//boomstick has cooldown, but lazer beam doesn't have cooldown
+			    		lastshot=current;
+			    	
+			    	Arrow arr1 =new Arrow(s.getX(),s.getY(),true);
+			    	Arrow arr2;
+			    	Arrow arr3;
+			    	
+			    	if (((Hunter) s).aim()==Direction.DOWN||((Hunter) s).aim()==Direction.UP) {//if up or down the bullets have a horizontal spread
+			    		arr2 = new Arrow(s.getX()+13,s.getY(),true);
+			    		arr3 = new Arrow(s.getX()-13,s.getY(),true);
+			    	}
+			    	else if (((Hunter) s).aim()==Direction.LEFT||((Hunter) s).aim()==Direction.RIGHT) {//if left or right the bullets have veritcal spread
+			    		arr2 = new Arrow(s.getX(),s.getY()+13,true);
+			    		arr3 = new Arrow(s.getX(),s.getY()-13,true);
+			    	}
+			    	else {//vertical spread just in case 
+			    		arr2 = new Arrow(s.getX(),s.getY()+13,true);
+			    		arr3 = new Arrow(s.getX(),s.getY()-13,true);
+			    	}
+			    	
+			    	arr1.setDirection(((Hunter) s).aim());
+			    	arr2.setDirection(((Hunter) s).aim());
+			    	arr3.setDirection(((Hunter) s).aim());
+			    	this.addGameObject(arr1);
+			    	this.addGameObject(arr2);
+			    	this.addGameObject(arr3);
+			    	System.out.println("                                                                                                     PEW!!");
+			    }
+			    }
+			    
+			    }
+		}
 		    //crossbow toggle 
 		   if (e.getKeyCode()==KeyEvent.VK_1) {
 			   System.out.println("Crossbow equipped");
@@ -376,17 +526,19 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 			   woodenStake=true;
 			   h.bowBack();//switch to crossbow images (just for visuals.. the stakes are still fired)
 		   }
-	  }
+		
+	  }//--------------------------------------------------------------------------
 
 	  public void keyReleased(KeyEvent e) {
 	   GameObject s = gameObjectList.get(index);
 	    s.setVelocity(0); 
 	    
+	    if (lazertrue==false) {
 	    //only shoots if in crossbow
 	    if(crossbow) {
 	    	
 	    //testing to see if releasing arrow button prevents "lazer beam" glitch
-	    if (difficulty.equals("normal")||difficulty.equals("seasoned hunter")) {
+	    
 	    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
 	    	if (woodenStake && woodenStakecount>0) {
 		 	     woodenStakecount--;
@@ -408,17 +560,17 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 	    		//gameObjectList.remove(arr);
 	    	//}
 	    }
-	    }
+	    
 	    }
 	    
 	    if(boomstick) {
 	    	
 		    //testing to see if releasing arrow button prevents "lazer beam" glitch
-		    if (difficulty.equals("normal")||difficulty.equals("seasoned hunter")) {
+		   boomcool=750;
 		    if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
 		    	if (woodenStake && woodenStakecount>0) {
 			 	     woodenStakecount--;
-			 	     woodenStake=true; //using wooden stakes instead of regular arrows
+			 	     //woodenStake=true; //using wooden stakes instead of regular arrows
 			 	      }
 			    	else if (woodenStakecount==0) {
 			    		woodenStake=false;//auto switch to regular arrows when out of stakes
@@ -435,7 +587,7 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		    	return;}
 		    	
 		    	long current = System.currentTimeMillis();
-		    	if (current-lastshot>=boomcool) {
+		    	if (current-lastshot>=boomcool||lazertrue) {//boomstick has cooldown, but lazer beam doesn't have cooldown
 		    		lastshot=current;
 		    	
 		    	Arrow arr1 =new Arrow(s.getX(),s.getY(),true);
@@ -468,8 +620,9 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		    	//}
 		    }
 		    }
+		    
 		    }
-		    }
+	  }
 	  }
 	  public int trackex() {
 		  return gameObjectList.get(index).getX();
@@ -479,18 +632,37 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 	  }
 	  //this makes Van Slechkont mortal (the vampires kill him if they catch him)
 	  public void aBitterEnd() {
+		  
+		  long currentTime = System.currentTimeMillis();
+
+		  
+		  
 		  //makes sure we don't try to use the hunter before he exists
 		  for (int i=0; i<gameObjectList.size();i++) {
-			  if (gameObjectList.get(i) instanceof Vampire||gameObjectList.get(i) instanceof Vlad) {
+			  //hunter is killed by vampires, Vlad the Devourer of Souls and his Cursed Skulls
+			  if (gameObjectList.get(i) instanceof Vampire||gameObjectList.get(i) instanceof Vlad||gameObjectList.get(i) instanceof CursedSkull) {
+				  
 				  //has to be a high number like 25 instead of 5 otherwise the vampires just orbit the player
 				  //used to be 25 but it caused immortality glitch where spamming arrows could block vampires from getting close enough
 				  if (Math.abs(gameObjectList.get(i).getX() - trackex()) <= 27 && Math.abs(gameObjectList.get(i).getY() - trackey()) <= 27) {
+					  
+					  //lets us hit vlad with a silver dagger
+					  if (gameObjectList.get(i) instanceof Vlad && currentTime - vladhit < vladcool && map.equals("finalboss")) {
+					      return; 
+					  }
+					  
 					  System.out.println("The hunter has been caught by the vampire! Game Over! Your score was: "+point);
 					  
 					  gameLoopTimer.stop();//ends the loop and prevents from infinite main menus
 					  //frame.dispose(); //exits the gameframe
 					  
 					  song.stop(); //stops the song if dead
+					  
+					  if (point>6942.0) {
+						  JOptionPane.showMessageDialog(null, "Congrats! You unlocked the Lazer beam glitch! "
+						  		+ "Use the code 'crossbowgobrrr' in the cheat "+ "menu");
+					  }
+					  
 					  
 					  //checks the top 10 highscores in the database and adds the player score if it's high enough
 					  List <Score> scorelist = Scorage.getTopTen(); //returns the database (should be only 10 scores)
@@ -513,7 +685,7 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 						   return;
 					  }
 					  }
-					  
+//)					  
 					  
 					  window.menuSelect("Main"); 
 					  //MainFrame menu = new MainFrame(); //makes and opens the main menu
@@ -524,7 +696,33 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		  }
 	  }
 	  //this makes the vampires killable (arrows kill vampires)
-	  public void fretNot() {
+	  public void fretNot() {//----------------------------------------------------------------------------------------------------
+		 // vladstruck=false;
+		  //this won't run unless vlad's cool down is ok
+		  vladdamage = false;
+		  long currenttime = System.currentTimeMillis();
+		  if (map.equals("finalboss")) {
+				//long currenttime = System.currentTimeMillis();
+				if (vampcounter>=10 && phase==2) {
+				vampcounter =0;
+				int rand = (int) (Math.random()*2)+1;
+				if (rand==1) {
+					if (difficulty.equals("baby")) {daggercount+=10;}
+					else {daggercount+=5;}
+				}
+				else {
+					if (difficulty.equals("baby")) {woodenStakecount+=5;}
+					else {woodenStakecount+=3;}
+				}
+				
+				//if (currenttime - vladhit < vladcool) {
+					//return;}
+				
+				}
+		  
+		  }
+		 // vladhit=System.currentTimeMillis();
+		  System.out.println(vladlife);
 		  if (gameObjectList.size()<2) {
 			  return;
 		  }
@@ -547,15 +745,36 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 						  }
 					  }
 					  //coding for vlad 
-					  else if (gameObjectList.get(v) instanceof Vlad) {
+					  else if (gameObjectList.get(v) instanceof Vlad &&!vladdamage) {
+						  //negate damage on vlad if he's in his grace period after being hit
+						 // if (currenttime - vladhit < vladcool) {
+							//	return;}
+						  
+						  vladdamage=true;
 						  //has to be a high number like 25 instead of 5 otherwise the vampires just orbit the player
 						  //used to be 25 but it caused immortality glitch where spamming arrows could block vampires from getting close enough
-						  if (Math.abs(gameObjectList.get(v).getX() - trackex()) <= 27 && Math.abs(gameObjectList.get(v).getY() - trackey()) <= 27) {
+						  Vlad vlad = (Vlad)gameObjectList.get(v);
+						  if (Math.abs(gameObjectList.get(v).getX() - trackex()) <= 60 && Math.abs(gameObjectList.get(v).getY() - trackey()) <= 60) {
 							  System.out.println("SLICE!!");
+							 
+							   if (currenttime - vladhit >= vladcool) {
+							        vladhit = System.currentTimeMillis();
+							        System.out.println("Vlad hit!");
+							    //}
+							  
+							  
 							  //vlad can tank multiple hits
 							  if (vladlife==1) {
 							  vladsDemise=gameObjectList.get(v);}//vlad gets marked for death
-							  else {vladlife--;if (vladlife==9||vladlife==6) {phase++;}}//moves to phase 2 @ 9 & phase 3 @ 6 
+							  else {vladlife--;
+							  if (vladlife==(int)(intVladLife*2/3)) {phase=2; //used to be vladlife==9  13/9=1.4
+							  vlad.nextPhase(phase);
+							  System.out.println(phase+"phase");
+							  vlad.preparePhase2(685,340);}
+							  if (vladlife==(int)(intVladLife*1/3)) {phase=3;}//used to be vladlife==6 13/6=2.2
+							  
+							  }//moves to phase 2 @ 9 
+							  // phase 3 @ 6 
 							  daggercount--; //lose one dagger use
 							  if (daggercount==0) {
 								  crossbow=true; //automatically switch back to crossbow when no more dagger uses
@@ -566,14 +785,15 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 							 // if (vladsDemise!=null) {
 								//  gameObjectList.remove(vladsDemise);
 							  //}
+							   }
 							  break;
 						  }
 					  }
 		    	}
 		    	  //vladimir devourer of souls is dead
-				  if (vladsDemise!=null) {
-					  gameObjectList.remove(vladsDemise);
-				  }
+				 // if (vladsDemise!=null) {
+					//  gameObjectList.remove(vladsDemise);
+				  //}
 		    }
 		    
 		  
@@ -604,8 +824,14 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 						  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= hitbox //
 							  && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= hitbox) {
 									System.out.println("A vampire has been slain by an arrow!");
+									//increase the vamp counter if in phase 2 of boss blitz
+									if (map.equals("finalboss") && phase == 2) {
+									    vampcounter++;
+									    System.out.println("Vamp counter: " + vampcounter);
+									}
+									
 									//higher the difficulty means higher the bounty
-									if (difficulty.equals("baby")) {point+=15;}  
+									if (difficulty.equals("baby")) {point+=15;}//note: 15  
 									else if (difficulty.equals("seasoned hunter")) {
 										if (round>=7) {point+=25+round;} //if the hunter is a pro they get a point multiplier for late rounds
 										else{point+=25;}}
@@ -628,15 +854,17 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 									
 									break;
 						  }
-						  if (vladsDemise!=null) {
-							  gameObjectList.remove(vladsDemise);
-						  }
 						  if (deadVamp!=100&&usedArrow!=100) {break;}
 						  }
 				  }
 			  }
 			  //code for vlad 
-			  if (gameObjectList.get(v) instanceof Vlad) {
+			  if (gameObjectList.get(v) instanceof Vlad&&!vladdamage) {
+				  //vlad has a grace period
+				  //if (currenttime - vladhit < vladcool) {
+					//	return;}
+				  
+				  vladdamage=true;
 			  //checks gamelist for arrow
 			  for (int a=0; a<gameObjectList.size();a++) {
 				  if (gameObjectList.get(a) instanceof Arrow) {
@@ -652,50 +880,75 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 						  hitbox = 50;
 					  }
 					  
-					  if (Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= hitbox //
+					  if (//!vladstruck&&
+							  Math.abs(gameObjectList.get(v).getX() - gameObjectList.get(a).getX()) <= hitbox //
 						  && Math.abs(gameObjectList.get(v).getY() - gameObjectList.get(a).getY()) <= hitbox) {
-								System.out.println("A vampire has been slain by an arrow!");
-								//higher the difficulty means higher the bounty
-								if (difficulty.equals("baby")) {point+=15;}  
-								else if (difficulty.equals("seasoned hunter")) {
-									if (round>=7) {point+=25+round;} //if the hunter is a pro they get a point multiplier for late rounds
-									else{point+=25;}}
-									
-								else {point+=20;}
-								deadVamp=v;
+								System.out.println("vlad has been struck by an arrrow");
+								
+								  if (currenttime - vladhit >= vladcool) {
+								        vladhit = System.currentTimeMillis();
+								        System.out.println("Vlad hit!");
+								
+							//	vladstruck=true;
+								
+								Vlad vlad = (Vlad)gameObjectList.get(v);
+								
+								int damage =0;
+								
 								if (!woodenStake||woodenStakecount==0) {
-								usedArrow=a;}
-								if (woodenStake //&& woodenStakecount>0
-										) {
-									//woodenStakecount--; 
-									//doesn't get removed until it hits the edge of the window and kills all vamps in its path
-									
-									if (vladlife==1) {
+								usedArrow=a;damage=1;}
+								
+								if (woodenStake) {damage=2;deadVamp=100;}
+								
+								if (vladlife==1) {
 									vladsDemise=gameObjectList.get(v);
 									}
-									else {vladlife--;if (vladlife==9||vladlife==6) {phase++;}}//moves to phase 2 @ 9 & phase 3 @ 6 
-									
-									point+=10; //bonus points for using a wooden stake
-									deadVamp=100; //prevents weird glitches
-								}
+									else {
+									 vladlife=vladlife-damage;	
+									 if (vladlife==(int)(intVladLife*2/3)) {phase=2; //used to be vladlife==9  13/9=1.4
+									 vlad.nextPhase(phase);
+									 System.out.println(phase+" phase");
+									 vlad.preparePhase2(685,340);
+									 //vlad.preparePhase2(window.getWidth()/2,window.getHeight()/2);
+									 }
+									 if (vladlife==(int)(intVladLife*1/3)) {phase=3;}}//used to be vladlife==6 13/6=2.2
+								//moves to phase 2 @ 9 & phase 3 @ 6 
 								
 								//if (vladsDemise!=null) {
 									//gameObjectList.remove(vladsDemise);
 								//}
+								  }
 								break;
 					  }
 					  if (deadVamp!=100&&usedArrow!=100) {break;}
 					  }
 			  }
 			  }
+			  //vladimir devourer of souls is dead
+			 // if (vladsDemise!=null) {
+				//  gameObjectList.remove(vladsDemise);
+			  //}
 			  if (woodenStake) {
 				  usedArrow=100;
 			  }
 		  }
 		  //vladimir devourer of souls is dead
-			  if (vladsDemise!=null) {
-				  gameObjectList.remove(vladsDemise);
-			  }
+			 // if (vladsDemise!=null) {
+				//  gameObjectList.remove(vladsDemise);
+			  //}
+		  
+		  if (vladsDemise!=null) {
+			  gameLoopTimer.stop();//ends the loop and prevents from infinite main menus
+			  //frame.dispose(); //exits the gameframe
+			  
+			  song.stop(); //stops the song if vlad dies
+			  window.menuSelect("Main"); 
+			  JOptionPane.showMessageDialog(null, "Congrats! You unlocked the secret Boomstick! Use the code 'groovy' in the cheat "
+			  		+ "menu");
+			   //return;
+			//  gameObjectList.remove(vladsDemise);
+		  }
+		  
 		  if (deadVamp==100||usedArrow==100) {
 			  return;
 		  }
@@ -706,7 +959,7 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		  else {gameObjectList.remove(usedArrow);
 		  gameObjectList.remove(deadVamp);}
 		  }
-	  }
+	  }//----------------------------------------------------------------------------------------------------
 	  
 	  //spawns more vampires overt time
 	  public void ariiiiise() {
@@ -728,7 +981,7 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 		        //every 5 rounds hunter gets a special item (rn we have silver dagger of wooden stake)
 		        if (round%5==0) {
 		        	int rand = (int) (Math.random()*2)+1;//gives either a wooden stake or silver dagger every 5 rounds
-		        	//rand=1;//TEMPORARY TESTING
+		        	//rand=2;//TEMPORARY TESTING
 		        	if(rand==1) {
 		        	daggercount+=5;} //reset dagger uses to 5		        
 		        	if (rand==2) {
@@ -772,12 +1025,32 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 	  
 	  
 	  private void necromancy() {
+		  
 		  int corner = (int)(Math.random()*4); 
 		  //spices up spawn location 
 		  int LX = (int)(Math.random()*200); 
 		  int RX = this.getWidth()- (int)(Math.random()*300)-200; 
 		  int UY = (int)(Math.random()*200); 
 		  int DY = this.getHeight()- (int)(Math.random()*300)-100; 
+		  
+		  //this is for boss blitz (we just keep spawning and spawning no regard to rounds)
+		  if (map.equals("finalboss")) {
+			  
+		  int vampCount = 0;
+		  boolean hunterAlive = false;
+
+		    for (GameObject obj : gameObjectList) {
+		        if (obj instanceof Vampire) vampCount++;
+		        if (obj instanceof Hunter) hunterAlive = true;
+		    }
+		  if (!hunterAlive) return;
+		  //vlad's general area is the spawn point for vampires
+		  //Vlad's coords are 685,340
+		  LX = 570;//645
+		  RX = 800;//705
+		  UY = 240;//325
+		  DY = 440;//355
+		  } 
 		  
 		  int monster =0;
 		  if (map.equals("wolves")) {
@@ -809,6 +1082,17 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 						  //note to self: previous line used to use Math.abs
 						  //arr.getX()+arr.getCurrentImage().getIconWidth() >= this.getWidth() || arr.getY()+arr.getCurrentImage().getIconHeight() >= this.getHeight()) {
 		    	    gameObjectList.remove(arr);
+		  }
+			  }}
+		  for (int i=0; i<gameObjectList.size();i++) {
+			  if (gameObjectList.get(i) instanceof CursedSkull) {
+				  CursedSkull yarr = (CursedSkull)gameObjectList.get(i);
+				  double yarrw = yarr.getCurrentImage().getIconWidth();
+				  double yarrh = yarr.getCurrentImage().getIconHeight();
+				  if (yarr.getX()+yarrw <= 0 || yarr.getY()+yarrh <= 0 ||
+						  yarr.getX()>this.getWidth()||yarr.getY()>this.getHeight()) {
+					 
+		    	    gameObjectList.remove(yarr);
 		  }
 			  }
 		  }
@@ -854,6 +1138,9 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 			  track = new File("Music/Toccata and Fugue in D minor Meets Metal - Johann Sebastian Bach.wav");}
 			else if (map.equals("wolves")) {
 				track = new File("Music/Hungry Like the Wolf (2001 Remaster).wav");}
+			else if (map.equals("finalboss")){
+				track = new File("Music/Judas Priest - Nostradamus.wav");
+			}
 			else {track = new File("Music/Toccata and Fugue in D minor Meets Metal - Johann Sebastian Bach.wav");}
 		  song = AudioSystem.getClip();
 		  AudioInputStream ais = AudioSystem.getAudioInputStream(track);  

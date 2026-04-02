@@ -32,7 +32,12 @@ public class CheatWindow extends JPanel{
 	private FangSlayerWindow window;
 	private Image Background;
 	private JToggleButton musicToggleButton;
+	private JToggleButton boomstickToggleButton;
+	private JToggleButton lazerToggleButton;
 	private JButton exitBtn;
+	private boolean boomtrue;
+	private boolean lazertrue;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -74,19 +79,19 @@ public class CheatWindow extends JPanel{
 		setLayout(null);
 		
 		//label for the cheat header
-		JLabel headerlbl = new JLabel("Insert a cheat code");
+		JLabel headerlbl = new JLabel("Cheat Codes");
 		headerlbl.setVerticalAlignment(SwingConstants.TOP);
-		headerlbl.setFont(new Font("Viner Hand ITC", Font.BOLD, 25));
+		headerlbl.setFont(new Font("Viner Hand ITC", Font.BOLD, 35));
 		headerlbl.setForeground(Color.red);
-		headerlbl.setBounds(98, 192, 253, 39);//old:98, 52, 253, 39
+		headerlbl.setBounds(98, 192, 300, 39);//old:98, 192, 253, 39
 		add(headerlbl);
 		
 		//music header
 		JLabel musicheaderlbl = new JLabel("Music Toggle");
 		musicheaderlbl.setVerticalAlignment(SwingConstants.TOP);
-		musicheaderlbl.setFont(new Font("Viner Hand ITC", Font.BOLD, 25));
+		musicheaderlbl.setFont(new Font("Viner Hand ITC", Font.BOLD, 35));
 		musicheaderlbl.setForeground(Color.red);
-		musicheaderlbl.setBounds(1130, 192, 253, 39);//old:98, 52, 253, 39
+		musicheaderlbl.setBounds(1100, 192, 253, 39);//old:98, 52, 253, 39
 		add(musicheaderlbl);
 		
 		
@@ -99,6 +104,30 @@ public class CheatWindow extends JPanel{
 		cheatBtn.setFont(new Font("Viner Hand ITC", Font.PLAIN, 16));
 		cheatBtn.setBounds(115, 279, 190, 31);//old:135, 159, 137, 21
 		add(cheatBtn);
+		
+		JLabel boomsticklbl = new JLabel("Boomstick Toggle");
+		boomsticklbl.setVerticalAlignment(SwingConstants.TOP);
+		boomsticklbl.setFont(new Font("Viner Hand ITC", Font.BOLD, 20));
+		boomsticklbl.setForeground(Color.red);
+		boomsticklbl.setBounds(115, 330, 253, 39);//old:98, 52, 253, 39
+		
+		JLabel lazerlbl = new JLabel("Lazer Toggle");
+		lazerlbl.setVerticalAlignment(SwingConstants.TOP);
+		lazerlbl.setFont(new Font("Viner Hand ITC", Font.BOLD, 20));
+		lazerlbl.setForeground(Color.red);
+		lazerlbl.setBounds(115, 380, 253, 39);//old:98, 52, 253, 39
+		
+		
+		//boomstick toggle 
+		boomstickToggleButton = new JToggleButton("On");
+		boomstickToggleButton.setBounds(315, 330, 140, 31);
+		boomstickToggleButton.setFont(new Font("Viner Hand ITC", Font.BOLD, 25));
+		
+		//lazer toggle
+		lazerToggleButton = new JToggleButton("On");
+		lazerToggleButton.setBounds(315, 380, 140, 31);
+		lazerToggleButton.setFont(new Font("Viner Hand ITC", Font.BOLD, 25));
+		
 		
 		exitBtn = new JButton("Exit to Main Menu");
 		exitBtn.setFont(new Font("Viner Hand ITC", Font.PLAIN, 25));
@@ -116,13 +145,61 @@ public class CheatWindow extends JPanel{
 		
 		//accompanying listener for the button
 				cheatBtn.addActionListener(e -> {
-					window.menuSelect("Main"); 
+					String message = "Invalid cheat code... poser";
+					
+					//window.menuSelect("Main"); 
 					
 					if (textField.getText().equals("groovy")) {
-					window.setPrim(2);}
-					JOptionPane.showMessageDialog(null, "Inputted cheat code: New Primary Weapon: Boomstick!");
+					window.setPrim(2);
+					//we now have the option to set the primary weapon to boomstick
+					add(boomstickToggleButton);
+					add(boomsticklbl);
+					boomstickToggleButton.setSelected(true);
+					
+					int rand = (int) (Math.random()*2)+1;
+					if (rand==1) {
+					message ="Hail to the king baby! You unlocked the Boomstick!";}
+					else {
+						message = "Be vewy vewy quiet, it's vampire season and You unlocked the Boomstick!";
+					}
+					}
+					else if (textField.getText().equals("crossbowgobrrr")) {
+						window.setLazer(true);
+						add(lazerToggleButton);
+						add(lazerlbl);
+						lazerToggleButton.setSelected(true);
+						int rand = (int) (Math.random()*2)+1;
+						if (rand==1) {
+						message ="Tee hee hee, crossbow go brRrRrRRrRrRRrRrRrrRrr!";}
+						else {
+							message = "It's not a bug, its a feature! You unlocked the lazer crossbow!";
+						}
+					}
+					//THESE ARE DEV CHEAT CODES (SPECIFICALLY FOR TESTING PURPOSES ONLY)
+					else if (textField.getText().equals("godmode")) {
+						window.setLazer(true);
+						window.setPrim(2);
+						add(boomstickToggleButton);
+						add(boomsticklbl);
+						add(lazerToggleButton);
+						add(lazerlbl);
+						message ="Jarvis, activate all cheat codes.";
+					}
+					else if (textField.getText().equals("vanilla")) {
+						window.setLazer(false);
+						window.setPrim(1);
+						remove(boomstickToggleButton);
+						remove(boomsticklbl);
+						remove(lazerToggleButton);
+						remove(lazerlbl);
+						message ="Lets go back to basics.";
+					}
+					
+					
+					JOptionPane.showMessageDialog(null, message);
+					repaint();
 			       });
-				
+				//MUSIC TOGGLE
 				musicToggleButton.addActionListener(e -> {
 					if (musicToggleButton.isSelected()) {//checks if the button is selected if so no music
 						window.setJamsesh(false);
@@ -131,6 +208,26 @@ public class CheatWindow extends JPanel{
 					else {
 						window.setJamsesh(true);
 					musicToggleButton.setText("On");} //if not there IS music
+			       });
+			//BOMMSTICK TOGGLE
+				boomstickToggleButton.addActionListener(e -> {
+					if (boomstickToggleButton.isSelected()) {//checks if the button is selected if so no music
+						window.setPrim(1);
+						boomstickToggleButton.setText("Off");
+					}
+					else {
+						window.setPrim(2);
+					boomstickToggleButton.setText("On");} //if not there IS music
+			       });
+				//LAZER TOGGLE
+				lazerToggleButton.addActionListener(e -> {
+					if (lazerToggleButton.isSelected()) {//checks if the button is selected if so no music
+						window.setLazer(false);
+						lazerToggleButton.setText("Off");
+					}
+					else {
+						window.setLazer(true);
+					lazerToggleButton.setText("On");} //if not there IS music
 			       });
 				
 				exitBtn.addActionListener(e -> {
