@@ -194,7 +194,41 @@ public class CheatWindow extends JPanel{
 						remove(lazerlbl);
 						message ="Lets go back to basics.";
 					}
-					
+					//removes all the highscores from the database (this is for testing purposes)
+					else if (textField.getText().equals("excommunicado")) {
+						Scorage.clearScores();
+						window.refreshLeader(); // has the leaderboard visually showcase the score board is in fact empty
+						message ="Global leaderboard cleared. Excommunicado.";
+					}
+					//brings back the test high scores (repopulates the database with the test scores)
+					else if (textField.getText().equals("VIP")) {
+						//just in case the leaderboard is already populated, we clear the scores
+						if (Scorage.getTopTen().size()<1) {
+							Scorage.clearScores();
+						}
+						Score s1 = new Score(19870, "wuzd@deByte?","Normal");
+						Score s2 = new Score(9861, "JAYsun_vorHEEZ","Normal");
+						Score s3 = new Score(9000, "alucard","Normal");
+						Score s4 = new Score(9000, "marceline","Normal");
+						Score s5 = new Score(8679, "Vamiplier","Normal");
+						Score s6 = new Score(8666, "mORBINTIme","Normal");
+						Score s7 = new Score(8585, "renfield","Normal");
+						Score s8 = new Score(8582, "@um_sandLR","Normal");
+						Score s9 = new Score(8558, "vladdDEEinhaler","Normal");
+						Score s10 = new Score(8551, "BLAYde","Normal");
+						Scorage.insertScore(s1);
+						Scorage.insertScore(s2);
+						Scorage.insertScore(s3);
+						Scorage.insertScore(s4);
+						Scorage.insertScore(s5);
+						Scorage.insertScore(s6);
+						Scorage.insertScore(s7);
+						Scorage.insertScore(s8);
+						Scorage.insertScore(s9);
+						Scorage.insertScore(s10);
+						window.refreshLeader(); // visuall updates the leaderboard
+						message = "The VIPs are back. Global leaderboard repopulated.";
+					}
 					
 					JOptionPane.showMessageDialog(null, message);
 					repaint();

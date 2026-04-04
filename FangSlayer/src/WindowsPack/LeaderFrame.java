@@ -1,5 +1,6 @@
 package WindowsPack;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -79,13 +80,14 @@ public class LeaderFrame extends JPanel{
 	    
 	    
 	    //board label (will show the top 10 high scores or an error message)
-		if (highscores.getModel().getSize()<1) { //checks if no scores
+		//if (highscores.getModel().getSize()<1) { //checks if no scores
 	    boardlbl = new JLabel("Error Global leaderboard empty");
 	    boardlbl.setFont(new Font("Viner Hand ITC", Font.PLAIN, 25));
+	    //boardlbl.setForeground(Color.red);
 		boardlbl.setBounds((window.getWidth()/2)+550,(window.getHeight())+340/2,430,440);//used to be: (115,65,183,143); 
 		add(boardlbl);
-		}
-		else {
+		//}
+		//else {
 			JScrollPane goodboard = new JScrollPane(highscores);
 			//should be placed so the leaderboard appears at the center of the window
 			//width used to be 230 and height used to be 140
@@ -100,8 +102,18 @@ public class LeaderFrame extends JPanel{
 			//for (int i=0; i<highscores.getModel().getSize();i++) {
 			//text += highscores.getModel().getElementAt(i).toString();} //used to say: "new JLabel" in front of highscores...
 			//boardlbl = new JLabel(text);
-		}
+		//}
 		
+			//checks if there are no scores (updates visuals based off of this )
+			   if (model.isEmpty()) {
+			    	//boardlbl=new JLabel("Error Global leaderboard empty");
+			        boardlbl.setText("Error Global leaderboard empty");
+			        boardlbl.setVisible(true);
+			        highscores.setVisible(false);
+			    } else {
+			        boardlbl.setVisible(false);
+			        highscores.setVisible(true);
+			    }
 		
 	    //the main menu button
 		menubtn = new JButton("Main Menu");
@@ -126,4 +138,21 @@ public class LeaderFrame extends JPanel{
 	            model.addElement(s);
 	        }
 	    }
+	  
+	  public void refresh() {
+		  boardUpdate(); //reload the data
+		    
+		    if (model.isEmpty()) {
+		    	//boardlbl=new JLabel("Error Global leaderboard empty");
+		        boardlbl.setText("Error Global leaderboard empty");
+		        boardlbl.setVisible(true);
+		        highscores.setVisible(false);
+		    } else {
+		        boardlbl.setVisible(false);
+		        highscores.setVisible(true);
+		    }
+
+		    revalidate();
+		    repaint();
+			}
 }

@@ -5,17 +5,20 @@ public class Score {
 		private String user; //the username provided in the highscore frame
 	    private int points; //the points associated with that user
 	    private int place; //helps 4 removing and editing (also showcases what place the user is at)
+	    private String difficulty; //shows what difficulty the user got the score on
 
-	    public Score(int points, int place, String user) {
+	    public Score(int points, int place, String user, String difficulty) {
 	        this.points = points;
 	        this.place=place;
 	        this.user=user;
+	        this.difficulty=difficulty;
 	    }
 	    
 	    //default constructor
-	    public Score(int points,String user) {
+	    public Score(int points,String user,String difficulty) {
 	    	this.points=points;
 	    	this.user=user;
+	    	this.difficulty=difficulty;
 	    	this.place=1;
 	    }
 
@@ -42,6 +45,14 @@ public class Score {
 	    public int getPlace() {
 	        return place;
 	    }
+	    
+	    public String getDiff() {
+	        return difficulty;
+	    }
+
+	    public void setDiff(String difficulty) {
+	      this.difficulty = difficulty;
+	    }
 
 	    // equality based on place (used for double checking stuff)
 	    //@Override
@@ -60,6 +71,6 @@ public class Score {
 	    //should be used for displaying the score on the leaderboard frame
 	    @Override
 	    public String toString() {
-	        return getPlace() +":"+user+"--------"+ getPoints();
+	        return getPlace() +":"+user+"--------"+ getPoints()+" "+getDiff();
 	    }
 }

@@ -71,6 +71,7 @@ public class DataBase {
                // + "place INTEGER NOT NULL,"
                 + "user TEXT NOT NULL,"
                 + "points INTEGER NOT NULL,"
+                +"difficulty TEXT NOT NULL,"
                 + "created_at DATETIME DEFAULT CURRENT_TIMESTAMP"
       //          + "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"
                 + ");";
@@ -78,6 +79,7 @@ public class DataBase {
         		Statement st = conn.createStatement()) {
           //  st.execute(usersSql);
             st.execute(scoresSql);
+           // st.execute("ALTER TABLE scores ADD COLUMN difficulty TEXT DEFAULT 'Normal';"); //adds the difficulty column to table if it doesn't exist
             st.execute("CREATE INDEX IF NOT EXISTS idx_scores_points ON scores(points DESC);"); //makes an index if the table exists
         }
     }

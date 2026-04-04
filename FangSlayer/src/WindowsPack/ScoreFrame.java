@@ -30,6 +30,7 @@ public class ScoreFrame extends JPanel{
 	private int points;
 	private FangSlayerWindow window;
 	private Image background;
+	private String difficulty;
 
 	/**
 	 * Launch the application.
@@ -38,10 +39,8 @@ public class ScoreFrame extends JPanel{
 	/**
 	 * Create the application.
 	 */
-	public ScoreFrame(//int points, 
-			FangSlayerWindow window) {
+	public ScoreFrame(FangSlayerWindow window) {
 		this.window=window;
-		//this.points=points;
 		initialize();
 	}
 
@@ -88,7 +87,7 @@ public class ScoreFrame extends JPanel{
 		
 		//accompanying listener for the button
 				highBtn.addActionListener(e -> {
-					Scorage.addScore(new Score(points,textField.getText())); //adds the score and inserted username to the database
+					Scorage.addScore(new Score(points,textField.getText(),difficulty)); //adds the score and inserted username to the database
 					// dispose();
 		            //LeaderFrame champ=new LeaderFrame();
 		            //champ.setVisible(true);
@@ -97,6 +96,10 @@ public class ScoreFrame extends JPanel{
 	}
 	public void setPoints(int points) {
 		this.points = points;
+	}
+	
+	public void setDiff(String diff) {
+		this.difficulty = diff;
 	}
 	
 	public void setBackground(String map) {

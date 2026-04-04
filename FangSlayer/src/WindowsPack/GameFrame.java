@@ -656,8 +656,9 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 					  gameLoopTimer.stop();//ends the loop and prevents from infinite main menus
 					  //frame.dispose(); //exits the gameframe
 					  
+					  if (song != null && song.isRunning()) {
 					  song.stop(); //stops the song if dead
-					  
+					  }
 					  if (point>6942.0) {
 						  JOptionPane.showMessageDialog(null, "Congrats! You unlocked the Lazer beam glitch! "
 						  		+ "Use the code 'crossbowgobrrr' in the cheat "+ "menu");
@@ -941,7 +942,9 @@ public class GameFrame extends JPanel implements ActionListener, KeyListener {
 			  gameLoopTimer.stop();//ends the loop and prevents from infinite main menus
 			  //frame.dispose(); //exits the gameframe
 			  
-			  song.stop(); //stops the song if vlad dies
+			  if (song != null && song.isRunning()) {
+				    song.stop();
+				} //stops the song if vlad dies
 			  window.menuSelect("Main"); 
 			  JOptionPane.showMessageDialog(null, "Congrats! You unlocked the secret Boomstick! Use the code 'groovy' in the cheat "
 			  		+ "menu");

@@ -12,13 +12,14 @@ import ScorePack.Score;
 public class Scorage {
 //storage for high scores (scorage) =]
 	
-	private static final String GET_ALL_SCORES_SQL = 
-			"SELECT user, points FROM scores ORDER BY points DESC LIMIT 10";
-    private static final String SELECT_SCORE_SQL =
-            "SELECT user, points FROM scores ORDER BY points DESC LIMIT 1 OFFSET ?"; 
+	private static final String GET_ALL_SCORES_SQL =
+		    "SELECT user, points, difficulty FROM scores ORDER BY points DESC LIMIT 10";
+
+		private static final String SELECT_SCORE_SQL =
+		    "SELECT user, points, difficulty FROM scores ORDER BY points DESC LIMIT 1 OFFSET ?";
     		//updated to limit 1 OFFSET ? to get the score from a specific place
     private static final String INSERT_SCORE_SQL =
-            "INSERT INTO scores(user, points) VALUES( ?, ?)";
+            "INSERT INTO scores(user, points, difficulty) VALUES( ?, ?,?)";
     //private static final String DELETE_BY_PLACEMENT_SQL =
       //      "DELETE FROM scores WHERE place = ?";
     //makes sure there are only 10 scores in the table 
@@ -38,7 +39,8 @@ public class Scorage {
                 	int points = rs.getInt("points");
                     //int placement = rs.getInt("place");
                     String user = rs.getString("user");
-                    Score s = new Score(points, placement++,user);
+                    String difficulty = rs.getString("difficulty");
+                    Score s = new Score(points, placement++,user, difficulty);
                     scores.add(s);
                 }
             }
@@ -58,7 +60,8 @@ public class Scorage {
     	                	int points = rs.getInt("points");
     	                    //int placement = rs.getInt("place");
     	                    String user = rs.getString("user");
-    	                    Score s = new Score(points,user);
+    	                    String diff=rs.getString("difficulty");
+    	                    Score s = new Score(points,user,diff);
     	                    return s;
     	                }
     	            }
@@ -76,6 +79,7 @@ public class Scorage {
              PreparedStatement ps = conn.prepareStatement(INSERT_SCORE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, score.getUser());
             ps.setInt(2,score.getPoints());
+            ps.setString(3, score.getDiff());
             int affected = ps.executeUpdate();
             if (affected == 0) return;
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -93,6 +97,41 @@ public class Scorage {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public static void clearScores() {
+    			try (Connection conn = DataBase.getInstance().getConnection();
+			 PreparedStatement ps = conn.prepareStatement("DELETE FROM scores")) {
+			ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+    }
+    }
+    
+    //this is for a MANUAL addition of scores (used for testing)
+    public static void insertScore(Score score) {
+    	  try (Connection conn = DataBase.getInstance().getConnection();
+    	             PreparedStatement ps = conn.prepareStatement(INSERT_SCORE_SQL, Statement.RETURN_GENERATED_KEYS)) {
+    	            ps.setString(1, score.getUser());
+    	            ps.setInt(2,score.getPoints());
+    	            ps.setString(3, score.getDiff());
+    	            int affected = ps.executeUpdate();
+    	            if (affected == 0) return;
+    	            try (ResultSet keys = ps.getGeneratedKeys()) {
+    	                if (keys.next()) {
+    	                    score.setPlace(keys.getInt(1));
+    	                } else { // fallback to last_insert_rowid()
+    	                    try (Statement st = conn.createStatement();
+    	                         ResultSet rs = st.executeQuery("SELECT last_insert_rowid()")) {
+    	                        if (rs.next()) score.setPlace(rs.getInt(1));
+    	                    }
+    	                }
+    	            }
+    	            //trims the top 10
+    	            try (PreparedStatement ps2 = conn.prepareStatement(CROWD_CONTROL_SQL)) {ps2.executeUpdate();}
+    	        } catch (Exception e) {
+    	            e.printStackTrace();
+    	        }
     }
     
     //this is a redundant method (we already have the top 10 trimmer in addscore)
