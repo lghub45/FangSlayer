@@ -1,5 +1,6 @@
 package Characters;
 
+//helps keeo track of a character or projectile's direction
 public class Direction {
 	public static final int NONE = 0;
 	public static final int UP = 1;

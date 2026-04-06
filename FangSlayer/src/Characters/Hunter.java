@@ -17,10 +17,9 @@ public class Hunter extends GameObject implements KeyListener {
   public Hunter(int x, int y, int cheat) {
     super(x, y);
     this.cheat=cheat;
-    //used to be Direction.NONE
     setDirection(Direction.UP); //need to set direction AT THE START otherwise an arrow "booby trap glitch" occurs (arrow freezes in place)
-    							 //note to self: maybe we can make a beartrap item that utilizes this glitch on purpose? 
     imageList = new LinkedList<Icon>();
+    //image list based on whether or not the boomstick is equipped
     if (cheat==1) {
     	imageList.clear();
     imageList.add(new ImageIcon("Images/huntu2.png"));//up
@@ -29,17 +28,13 @@ public class Hunter extends GameObject implements KeyListener {
     imageList.add(new ImageIcon("Images/huntL2.png.png"));//left
     }
     else if (cheat==2) {
-    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyu.png")));
-    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyd.png")));
-    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyr.png")));
-    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyL.png")));
     	imageList.clear();
     	imageList.add(new ImageIcon("Images/groovyu.png"));//up
     	imageList.add(new ImageIcon("Images/groovyd.png"));//down
     	imageList.add(new ImageIcon("Images/groovyr.png"));//right
     	imageList.add(new ImageIcon("Images/groovyL.png"));//left
     }
-    else {
+    else {//just in case
         imageList.add(new ImageIcon("Images/huntu2.png"));//up
         imageList.add(new ImageIcon("Images/huntd2.png.png"));//down
         imageList.add(new ImageIcon("Images/huntr2.png.png"));//right
@@ -117,35 +112,25 @@ public class Hunter extends GameObject implements KeyListener {
   }
 
   public void keyPressed(KeyEvent e) {
-	  //now compatible for wasd not just arrow keys
+	  //arrow keys AND WASD compatible
     if (e.getKeyCode() == KeyEvent.VK_UP||e.getKeyCode() == KeyEvent.VK_W) {
       setDirection(Direction.UP);
-      //test for the key press
-      //System.out.println("                                                                                                     UP button pressed");
     arrowAim = getDirection();
     }
     if (e.getKeyCode() == KeyEvent.VK_DOWN||e.getKeyCode() == KeyEvent.VK_S) {
       setDirection(Direction.DOWN);
-      //test for the key press
-      //System.out.println("                                                                                                     DOWN button pressed");
       arrowAim = getDirection();
     }
     if (e.getKeyCode() == KeyEvent.VK_LEFT||e.getKeyCode() == KeyEvent.VK_A) {
       setDirection(Direction.LEFT);
-      //test for the key press
-      //System.out.println("                                                                                                     LEFT button pressed");
       arrowAim = getDirection();
     }
     if (e.getKeyCode() == KeyEvent.VK_RIGHT||e.getKeyCode() == KeyEvent.VK_D) {
       setDirection(Direction.RIGHT);
-      //test for the key press
-      //System.out.println("                                                                                                     RIGHT button pressed");
       arrowAim = getDirection();
     }
     if(e.getKeyCode() == KeyEvent.VK_F||e.getKeyCode() == KeyEvent.VK_P) {
-    //	arrowAim = getDirection(); 
     	setDirection(Direction.NONE); //makes sure the hunter doesn't move while shooting
-    	//System.out.println("                                                                                                     PEW!!");
     }
   }
   //tracks the position of the hunter so the vampire can follow and compare for when they meet
@@ -159,7 +144,6 @@ public class Hunter extends GameObject implements KeyListener {
 	  return arrowAim;
   }
   
-  //note to self remove these or comment them out for the final version
 	public int getHeight() {
 		 Icon icon = getCurrentImage();
 		    int  iconHeight    = icon.getIconHeight();
@@ -181,7 +165,7 @@ public class Hunter extends GameObject implements KeyListener {
 		imageList.add(new ImageIcon("Images/shankleft.png"));//left
 	}
 	
-	//changes imagesto crossbow
+	//changes imagesto crossbow or boomstick if equipped
 		public void bowBack(){
 			imageList.clear();
 			if (cheat==1) {
@@ -191,10 +175,6 @@ public class Hunter extends GameObject implements KeyListener {
 		    imageList.add(new ImageIcon("Images/huntL2.png.png"));//left
 		    }
 		    else if (cheat==2) {
-		    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyu.png")));
-		    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyd.png")));
-		    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyr.png")));
-		    	//imageList.add(new ImageIcon(getClass().getResource("/Images/groovyL.png")));
 		    	imageList.clear();
 		    	imageList.add(new ImageIcon("Images/groovyu.png"));//up
 		    	imageList.add(new ImageIcon("Images/groovyd.png"));//down

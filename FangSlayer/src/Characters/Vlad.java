@@ -9,21 +9,20 @@ import javax.swing.ImageIcon;
 import WindowsPack.GameFrame;
 
 public class Vlad extends GameObject{
-//Vladimir DevourerOfSouls the big bad
+//Vladimir the DevourerOfSouls (the big bad)
 	
-	 
 	 public int clock=0;
 	 
+	//image lists
 	 private static LinkedList<Icon> firestates;	 
 	 private static LinkedList<Icon> necrostates;	
 	 private static LinkedList<Icon> monsterstates;	
+	 
 	 public boolean openFire;
 	 private boolean zoomies;
 	 private int windowW;
 	 private int windowH;
 	 private boolean smokeHappened;
-	 
-	 //NOTE TO SELF THESE ARE TEMPORARY IMAGES
 	 
 	 //phase 1 (shoot flaming skulls)
 	 static {//Each has four images that don't get used because otherwise the code freaks out
@@ -36,9 +35,10 @@ public class Vlad extends GameObject{
 	 static {//phase 2 (summon TONS of vampires)
 		 necrostates = new LinkedList<Icon>();
 		 necrostates.add(new ImageIcon("Images/vladp1.png"));
-		 necrostates.add(new ImageIcon("Images/DamnedSoul.png"));//puff of smoke (TEMPORARY IMAGE)
+		 necrostates.add(new ImageIcon("Images/DamnedSoul.png"));//puff of smoke 
 		 necrostates.add(new ImageIcon("Images/vladp1.png"));
-		 necrostates.add(new ImageIcon("Images/vladp1.png"));}
+		 necrostates.add(new ImageIcon("Images/vladp1.png"));
+		 }
 	 static {//phase 3 (turn into giant bat)
 		 monsterstates = new LinkedList<Icon>();
 		 monsterstates.add(new ImageIcon("Images/batu.png"));
@@ -67,35 +67,14 @@ public class Vlad extends GameObject{
 		  }
 	 //movement mechanics for bat/monster mode
  public void takeFlight(int huntrx,int huntry) {
-		 
-		 //Modern Mechanics (This is normal Mode, hard mode will have faster speed)
-		 int decidedistX = Math.abs(huntrx-this.trackex());//distance in y direction from Van Slechkont 2 vampire
-		 int decidedistY = Math.abs(huntry-this.trackey());//distance in x direction from Van Slechkont 2 vampire
-	     
 	     clock++;
-		//if (decidedistY>decidedistX && clock>=10)  {
-		//if(this.getY() > huntry+2) {setDirection(Direction.UP);setVelocity(5);}//inner if 1
-		 //else if (this.getY() < huntry-2) {setDirection(Direction.DOWN);setVelocity(5);}//inner else 1
-		//clock=0;
-		//}
 		
-		//else if(decidedistX>decidedistY && clock>=10) {
-	//	 if (this.getX() > huntrx) {setDirection(Direction.LEFT);setVelocity(5);}//inner if 1
-		// else if (this.getX()<huntrx) {setDirection(Direction.RIGHT);setVelocity(5);}//inn
-		//clock=0;
-		//}
-		 
-		 
-	     //old movement mechanics (THIS WILL BE USED FOR EASY MODE)
-	     //this makes sure he moves CRAYZ fast horizontally 
-	     //(he should move up and down on the sides of the map and once he reaches the correct height he swoops across the map)
-		 
 	     //vertical movement (slow)
 	     int speed=10;
 	     if (!zoomies) {
-	     if(this.getY() > huntry+15) {setDirection(Direction.UP);setVelocity(speed);} //used to be Math.sqrt(speed) instead of 15
-		 else if (this.getY() < huntry-15) {setDirection(Direction.DOWN);setVelocity(speed);}//used to be Math.sqrt(speed) instead of 15
-         //horizontal movement (I'm fast a f*ck boi) 
+	     if(this.getY() > huntry+15) {setDirection(Direction.UP);setVelocity(speed);} 
+		 else if (this.getY() < huntry-15) {setDirection(Direction.DOWN);setVelocity(speed);}
+         //horizontal movement (I am speed) 
 		 else {
 			 if (Math.abs(this.getY() - huntry) <= 15) {
 		    	    setY(huntry); //just in case (makes sure that vlad NEVER has a hard time vertically aligning to you)
@@ -126,20 +105,7 @@ public class Vlad extends GameObject{
 			        setDirection(Direction.LEFT);
 			        zoomies = false;
 			        return;
-			    }
-			 //if (this.getX() <= 0 || this.getX() >= windowW - icon.getIconWidth()) {
-				// if (this.getX() >= windowW - icon.getIconWidth()) {
-					 //stops vlad from sticking to the right wall
-					//    setX(windowW - icon.getIconWidth() - 2);  
-					  //  zoomies = false;                          
-					    //setDirection(Direction.LEFT);             
-					    //setVelocity(1);                            
-					    //return;
-					//}
-			    	 //zoomies=false;
-			       // setVelocity(0);
-			        //return;
-			 //}
+			    }			
 			 }
 	     return;
 	 }
@@ -182,43 +148,9 @@ public class Vlad extends GameObject{
 	    if (currenttime-time1>=25&&!smokeHappened) {setDirection(Direction.DOWN);smokeHappened=true;}
 	    else if(smokeHappened) {System.out.println("smoke already happened");}
 	    else {setDirection(Direction.UP);}
-	    // Calculate differences
-	   // int distX = windowx - currentX;
-	   // int distY = windowy - currentY;
-
-	    // makes sure the coords on vlad are close enough to the point we wanna be at
-	   // int coordprox = 5;
-
-	    // If close enough, snap to target
-	    //if (Math.abs(distX) <= coordprox && Math.abs(distY) <= coordprox) {
-	      //  setX(windowx);
-	        //setY(windowy);
-	        //setVelocity(0);
-	        //setDirection(Direction.NONE);
-	        //setVelocity(0);
-	    //} else {
-	        // Move towards target with limited speed
-	       // if (distY != 0) {
-	        //	if (distY>0) {
-	        //		setDirection(Direction.DOWN);
-	        //	}
-	        //	else {setDirection(Direction.UP);}
-	        //    setVelocity(5); // limit speed
-	      //  } else if (distX != 0) {
-	      //  	if (distX>0) {
-	        //		setDirection(Direction.LEFT);
-	        //	}
-	        //	else {setDirection(Direction.RIGHT);}
-	         //   setVelocity(5); 
-	     //   }
-	   // }
-	 
-	 
- 		//if (this.getX()!=windowx && this.getY()!=windowy) {
- 	//	setDirection(Direction.DOWN);setVelocity(5);}
- 		//else {setVelocity(0);}//if already at the center he doesn't move
  	}
  	
+ //move to the next phase
  	public void nextPhase(int phase) {
  		if (phase==2) {
 	    	imageList=necrostates;
@@ -253,6 +185,8 @@ public class Vlad extends GameObject{
 	 @Override
 	 public void keyReleased(KeyEvent e) {
 	 }
+	 
+	 //lets vlad move
 	 @Override
 	 public void move(GameFrame c) {
 		 if (getVelocity() == 0 || getDirection() == Direction.NONE) {//helpful to shoot cursed skulls (used to be direction DOWN)
@@ -266,7 +200,7 @@ public class Vlad extends GameObject{
 		    int  canvasHeight = (int)c.getSize().getHeight();
 		    int  canvasWidth  = (int)c.getSize().getWidth();
 		    
-		    //MOVE Hunter OBJECT
+		    //MOVE vlad
 		    switch (getDirection()) {
 		      case Direction.UP:
 		        setY(getY() - getVelocity());
@@ -298,7 +232,7 @@ public class Vlad extends GameObject{
 
 	 }
 	 
-	 //NOTE TO SELF EACH PHASE SERVES DIFFERENT PURPOSES FOR DIRECTIONAL IMAGING (only phase 3 using 4 images traditionally)
+	 //EACH PHASE SERVES DIFFERENT PURPOSES FOR DIRECTIONAL IMAGING (only phase 3 using 4 images traditionally)
 	 @Override
 	 public void setImage() {
 		   switch (getDirection()) {

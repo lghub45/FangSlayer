@@ -15,13 +15,13 @@ public class Arrow extends GameObject{
 	public Arrow(int x, int y,boolean woodenStake) {
 		super(x,y);
 		
-		if (!woodenStake){
+		if (!woodenStake){//arrow images
 		imageList = new LinkedList<Icon>();
 	    imageList.add(new ImageIcon("Images/ArrowUp1.png"));
 	    imageList.add(new ImageIcon("Images/ArrowDown1.png"));
 	    imageList.add(new ImageIcon("Images/ArrowLeft1.png"));
 	    imageList.add(new ImageIcon("Images/ArrowRight1.png"));
-	    }else{
+	    }else{//wooden stake images (also used for boomstick)
 	    imageList = new LinkedList<Icon>();
 	    imageList.add(new ImageIcon("Images/SteakUp1.png"));
 	    imageList.add(new ImageIcon("Images/SteakDown1.png"));
@@ -33,7 +33,7 @@ public class Arrow extends GameObject{
 		super.setDirection(direction);
 		setVelocity(40);
 	}
-	//formalities so we can utilize GameObject
+	//formalities so we can utilize GameObject (not actually used for the arrow but needed to avoid errors)
 	@Override
 	public void keyTyped(KeyEvent e) {}
 	@Override
@@ -46,47 +46,25 @@ public class Arrow extends GameObject{
 		//whatever the hunter's direction is when the fire key is pressed is the arrow's PERMANENT direction
 		 Icon icon = getCurrentImage();
 
-		  //  int  iconHeight   = icon.getIconHeight();
-		    //int  iconWidth    = icon.getIconWidth();
-		    //int  canvasHeight = (int)c.getSize().getHeight();
-		    //int  canvasWidth  = (int)c.getSize().getWidth();
-		    
 		    //MOVE Hunter OBJECT
 		    switch (getDirection()) {
 		      case Direction.UP:
-		        setY(getY() - getVelocity());
-		        //if (getY() < 0) {
-		          //setY(0);
-		        //}
+		        setY(getY() - getVelocity()); 
 		        break;
 		      case Direction.DOWN:
 		        setY(getY() + getVelocity());
-		     //   if (getY() + iconHeight > canvasHeight) {
-		       //   setY((int)(canvasHeight - iconHeight));
-		        //}
 		        break;
 		      case Direction.LEFT:
 		    	  setX(getX() - getVelocity());
-		    	//    if (getX() < 0) {
-		    	  //      setX(0);
-		    	    //}
 		    	    break;
 		      case Direction.RIGHT:
 		    	   setX(getX() + getVelocity());
-		    	 //   if (getX() + iconWidth > canvasWidth) {
-		    	   //     setX(canvasWidth - iconWidth);
-		    	    //}
 		    	    break;
 			default:
 				break;
 		    }
-		    //arrow is detroyed at the edge of the window
-		 //   if (getX() <= 0 || getY() <= 0 ||
-		   // 	    Math.abs(getX()+icon.getIconWidth()) >= c.getWidth() || Math.abs(getY()+icon.getIconHeight()) >= c.getHeight()) {
-		    //	    c.gameObjectList.remove(this);
-		    	//}
 	}
-
+//different direction images for the arrow 
 	@Override
 	public void setImage() {
 		 switch (getDirection()) {
@@ -107,8 +85,7 @@ public class Arrow extends GameObject{
 	    }
 		
 	}
-	
-	//note to self remove these or comment them out for the final version
+	//BACKUP SETTERS AND GETTERS
 	public int getHeight() {
 		 Icon icon = getCurrentImage();
 		    int  iconHeight    = icon.getIconHeight();

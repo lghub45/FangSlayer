@@ -14,7 +14,7 @@ public class CursedSkull extends GameObject{
 	public CursedSkull(int x, int y) {
 		super(x,y);
 
-		
+		//only one image for the list, but just a formality to have four
 		imageList = new LinkedList<Icon>();
 	    imageList.add(new ImageIcon("Images/DamnedSoul.png"));
 	    imageList.add(new ImageIcon("Images/DamnedSoul.png"));

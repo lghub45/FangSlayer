@@ -23,10 +23,9 @@ import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
 
-//used to extend JFrame
 public class CheatWindow extends JPanel{
 
-	//private JFrame frame;
+	
 	private JTextField textField;
 	private int points;
 	private FangSlayerWindow window;
@@ -38,25 +37,18 @@ public class CheatWindow extends JPanel{
 	private boolean boomtrue;
 	private boolean lazertrue;
 	
-	/**
-	 * Launch the application.
-	 */
 
 	/**
 	 * Create the application.
 	 */
-	public CheatWindow(//int points, 
-			FangSlayerWindow window) {
+	public CheatWindow(FangSlayerWindow window) {
 		this.window=window;
-		
+		//sets the background
 		 try {
-			 //NOTE TO SELF: TEMPORARY BACKGROUND.... MAKE OFFICIAL BACKGROUND
 		        Background = ImageIO.read(new File("Images/FangMainMenu2.png"));
 		    } catch (IOException e) {
 		        e.printStackTrace();
 		    }
-		
-		//this.points=points;
 		initialize();
 	}
 	
@@ -73,9 +65,6 @@ public class CheatWindow extends JPanel{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		//makes the window
-		//setBounds(100, 100, 450, 300);
-		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
 		
 		//label for the cheat header
@@ -94,23 +83,26 @@ public class CheatWindow extends JPanel{
 		musicheaderlbl.setBounds(1100, 192, 253, 39);//old:98, 52, 253, 39
 		add(musicheaderlbl);
 		
-		
+		//cheatbox user input
 		textField = new JTextField();
 		textField.setBounds(154, 250, 96, 19);//old:154, 130, 96, 19
 		add(textField);
 		textField.setColumns(10);
 		
+		//cheat submit button
 		JButton cheatBtn = new JButton("Submit Cheat Code");
 		cheatBtn.setFont(new Font("Viner Hand ITC", Font.PLAIN, 16));
 		cheatBtn.setBounds(115, 279, 190, 31);//old:135, 159, 137, 21
 		add(cheatBtn);
 		
+		//TOGGLES
+		//boomstick label
 		JLabel boomsticklbl = new JLabel("Boomstick Toggle");
 		boomsticklbl.setVerticalAlignment(SwingConstants.TOP);
 		boomsticklbl.setFont(new Font("Viner Hand ITC", Font.BOLD, 20));
 		boomsticklbl.setForeground(Color.red);
 		boomsticklbl.setBounds(115, 330, 253, 39);//old:98, 52, 253, 39
-		
+		//lazer label
 		JLabel lazerlbl = new JLabel("Lazer Toggle");
 		lazerlbl.setVerticalAlignment(SwingConstants.TOP);
 		lazerlbl.setFont(new Font("Viner Hand ITC", Font.BOLD, 20));
@@ -128,14 +120,13 @@ public class CheatWindow extends JPanel{
 		lazerToggleButton.setBounds(315, 380, 140, 31);
 		lazerToggleButton.setFont(new Font("Viner Hand ITC", Font.BOLD, 25));
 		
-		
+		//exit button
 		exitBtn = new JButton("Exit to Main Menu");
 		exitBtn.setFont(new Font("Viner Hand ITC", Font.PLAIN, 25));
 		exitBtn.setBounds(605, 655, 261, 50);
 		add(exitBtn);
 		
 		//music toggle button
-		//musicToggleButton = new JToggleButton("Music On/Off");
 		musicToggleButton = new JToggleButton("On");
 		musicToggleButton.setBounds(1135, 279, 140, 31);
 		musicToggleButton.setFont(new Font("Viner Hand ITC", Font.BOLD, 25));
@@ -143,12 +134,11 @@ public class CheatWindow extends JPanel{
 		add(musicToggleButton);
 		
 		
-		//accompanying listener for the button
+		//listener checks for valid cheat codes and applies accordingly
 				cheatBtn.addActionListener(e -> {
 					String message = "Invalid cheat code... poser";
-					
-					//window.menuSelect("Main"); 
-					
+
+					//set boomstick to primary weapon 
 					if (textField.getText().equals("groovy")) {
 					window.setPrim(2);
 					//we now have the option to set the primary weapon to boomstick
@@ -163,6 +153,7 @@ public class CheatWindow extends JPanel{
 						message = "Be vewy vewy quiet, it's vampire season and You unlocked the Boomstick!";
 					}
 					}
+					//activate the lazer crossbow (weapon FEATURE not a primary weapon)
 					else if (textField.getText().equals("crossbowgobrrr")) {
 						window.setLazer(true);
 						add(lazerToggleButton);
@@ -176,7 +167,7 @@ public class CheatWindow extends JPanel{
 						}
 					}
 					//THESE ARE DEV CHEAT CODES (SPECIFICALLY FOR TESTING PURPOSES ONLY)
-					else if (textField.getText().equals("godmode")) {
+					else if (textField.getText().equals("godmode")) {//applies both cheat codes
 						window.setLazer(true);
 						window.setPrim(2);
 						add(boomstickToggleButton);
@@ -185,7 +176,7 @@ public class CheatWindow extends JPanel{
 						add(lazerlbl);
 						message ="Jarvis, activate all cheat codes.";
 					}
-					else if (textField.getText().equals("vanilla")) {
+					else if (textField.getText().equals("vanilla")) {//reset the cheat codes
 						window.setLazer(false);
 						window.setPrim(1);
 						remove(boomstickToggleButton);
@@ -229,7 +220,7 @@ public class CheatWindow extends JPanel{
 						window.refreshLeader(); // visuall updates the leaderboard
 						message = "The VIPs are back. Global leaderboard repopulated.";
 					}
-					
+					//outputs the message for each cheat code
 					JOptionPane.showMessageDialog(null, message);
 					repaint();
 			       });

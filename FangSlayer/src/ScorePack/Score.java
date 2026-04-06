@@ -22,6 +22,7 @@ public class Score {
 	    	this.place=1;
 	    }
 
+	    //SETTERS AND GETTERS
 	    public int getPoints() {
 	        return points;
 	    }
@@ -55,7 +56,6 @@ public class Score {
 	    }
 
 	    // equality based on place (used for double checking stuff)
-	    //@Override
 	    public boolean equals(Object o) {
 	        if (this == o) return true;
 	        if (!(o instanceof Score)) return false;
@@ -68,7 +68,7 @@ public class Score {
 	        return Integer.hashCode(place);
 	    }
 
-	    //should be used for displaying the score on the leaderboard frame
+	    //used for displaying the score on the leaderboard frame
 	    @Override
 	    public String toString() {
 	        return getPlace() +":"+user+"--------"+ getPoints()+" "+getDiff();

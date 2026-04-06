@@ -43,12 +43,6 @@ public class Vampire extends GameObject {
 		    	imageList = vampstates;//just in case
 		    }
 		    
-		    //imageList = new LinkedList<Icon>();
-		    //imageList.add(new ImageIcon("Images/VampUp1.png"));
-		    //imageList.add(new ImageIcon("Images/VampDown1.png"));
-		    //imageList.add(new ImageIcon("Images/VampLeft1.png"));
-		    //imageList.add(new ImageIcon("Images/VampRight1.png"));
-		    
 		  }
 	 public void move(GameFrame c) {
 		    Icon icon = getCurrentImage();
@@ -58,7 +52,7 @@ public class Vampire extends GameObject {
 		    int  canvasHeight = (int)c.getSize().getHeight();
 		    int  canvasWidth  = (int)c.getSize().getWidth();
 		    
-		    //MOVE Hunter OBJECT
+		    //MOVE Vampire OBJECT
 		    switch (getDirection()) {
 		      case Direction.UP:
 		        setY(getY() - getVelocity());
@@ -89,6 +83,7 @@ public class Vampire extends GameObject {
 		    }
 
 		  }
+	 //set the image based on direction
 	 public void setImage() {
 		    switch (getDirection()) {
 		      case Direction.NONE:
@@ -111,15 +106,13 @@ public class Vampire extends GameObject {
 	 public void huntHim(int huntrx,int huntry) {
 		 
 		 //Modern Mechanics (This is normal Mode, hard mode will have faster speed)
-		 int decidedistX = Math.abs(huntrx-this.trackex());//distance in y direction from Van Slechkont 2 vampire
-		 int decidedistY = Math.abs(huntry-this.trackey());//distance in x direction from Van Slechkont 2 vampire
+		 int decidedistX = Math.abs(huntrx-this.trackex());//distance in x direction from Van Slechkont 2 vampire
+		 int decidedistY = Math.abs(huntry-this.trackey());//distance in y direction from Van Slechkont 2 vampire
 	     
 	     clock++;
 	     
-	     
 	     //we want to make sure the vampires don't move diagonally and (preferably) not too jittery
 	     //so we need to make sure they only change AXIS once every 10 ticks or so
-	  
 		if (decidedistY>decidedistX && clock>=10)  {
 		if(this.getY() > huntry+2) {setDirection(Direction.UP);setVelocity(5);}//inner if 1
 		 else if (this.getY() < huntry-2) {setDirection(Direction.DOWN);setVelocity(5);}//inner else 1
@@ -132,13 +125,6 @@ public class Vampire extends GameObject {
 		clock=0;
 		}
 		 
-		 
-	     //old movement mechanics (THIS WILL BE USED FOR EASY MODE)
-		 //if(this.getY() > huntry+2) {setDirection(Direction.UP);setVelocity(5);}
-		 //else if (this.getY() < huntry-2) {setDirection(Direction.DOWN);setVelocity(5);}
-		 
-		 //else if (this.getX() > huntrx) {setDirection(Direction.LEFT);setVelocity(5);}
-		 //else if (this.getX()<huntrx) {setDirection(Direction.RIGHT);setVelocity(5);}
 	 }
 	 
 	 //just a formality since vampire doesn't need controls to move

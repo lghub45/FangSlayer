@@ -17,15 +17,15 @@ public class DataBase {
     private static final String URL = "jdbc:sqlite:" + DB_FILE;
 
     private static DataBase instance;
-    //private final Connection conn; 
 
     private DataBase() throws SQLException {
     	
+    	//makes a new directory if it doesn't exist
     	File dir = new File("scoredata");
     	if (!dir.exists()) {
     	    dir.mkdirs();
     	}
-    	
+    	//assuming we have it, the sql lite driver is loaded
     	 try {
     	        Class.forName("org.sqlite.JDBC");
     	    } catch (ClassNotFoundException e) {
@@ -56,30 +56,20 @@ public class DataBase {
 
     /** Create tables if they don't exist. Safe to call multiple times. */
    public void initialize() throws SQLException {
-       //scoressql should hold score objects which have the number of points, their placement, and the name entered
-	   //which means a usersSql SHOULD be redundant
-	   //String usersSql = ""
-                //+ "CREATE TABLE IF NOT EXISTS users ("
-                //+ "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                //+ "username TEXT NOT NULL UNIQUE,"
-                //+ "password_hash TEXT NOT NULL,"
-               // + "created_at DATETIME DEFAULT CURRENT_TIMESTAMP"
-              //  + ");";
+       //scoressql should hold score objects which have the number of points, the name entered and the difficulty of the game played
+	   
         String scoresSql = ""
                 + "CREATE TABLE IF NOT EXISTS scores ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-               // + "place INTEGER NOT NULL,"
-                + "user TEXT NOT NULL,"
-                + "points INTEGER NOT NULL,"
-                +"difficulty TEXT NOT NULL,"
+                + "user TEXT NOT NULL," // username
+                + "points INTEGER NOT NULL," //score
+                +"difficulty TEXT NOT NULL," // difficulty
                 + "created_at DATETIME DEFAULT CURRENT_TIMESTAMP"
       //          + "FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE"
                 + ");";
         try (Connection conn = getConnection();
         		Statement st = conn.createStatement()) {
-          //  st.execute(usersSql);
             st.execute(scoresSql);
-           // st.execute("ALTER TABLE scores ADD COLUMN difficulty TEXT DEFAULT 'Normal';"); //adds the difficulty column to table if it doesn't exist
             st.execute("CREATE INDEX IF NOT EXISTS idx_scores_points ON scores(points DESC);"); //makes an index if the table exists
         }
     }
