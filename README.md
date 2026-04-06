@@ -1,7 +1,7 @@
 This README serves as a guide on to download and play FANG SLAYER. 
 
 
-_______________________________________________________DOWNLOAD AND SETUP GUIDE______________________________________________________________________________________
+___________________________________________________DOWNLOAD AND SETUP GUIDE______________________________________________________________________________________
 
 STEP ONE: INSTALL JAVA
 
@@ -37,8 +37,16 @@ A: Now that everything needed is set up, just navigate to the MAIN class by clic
    and finally open "FangSlayerMain.java". 
 B: Once this is open click "Run" button (it looks like a green circle with a white triangle inside of it), and the game will start. 
 
+ALTERNATIVELY:
+The following link is a runable JAR file which was too big to include as a normal file in this 
+repository so I added the google drive link for anybody to download it. 
+It ensures a lot less hassle due to the fact that you don't need to set up anything on your end (other than copy and pasting this link, and downloading the file)
+, but it may possibly be a little riskier and probably not as high quality as setting it up yourself (I'm not sure though because I'm pretty new to JAR files).
+FANG SLAYER DOWNLOAD LINK
+https://drive.google.com/file/d/1caMjbJ8wdjmcBJ9AAUx1Duw73xWPNKvJ/view?usp=drive_link
 
-_______________________________________________________________GAMEPLAY GUIDE_______________________________________________________________________________________
+
+____________________________________________________________GAMEPLAY GUIDE_______________________________________________________________________________________
 
 CONTROLS:
 - BASICS
